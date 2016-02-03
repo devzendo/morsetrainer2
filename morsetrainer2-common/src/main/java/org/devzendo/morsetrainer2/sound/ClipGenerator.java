@@ -31,6 +31,12 @@ public class ClipGenerator {
 	private int fwpm;
 	private int freqHz;
 
+	private byte[] dit;
+	private byte[] dah;
+	private byte[] elementSpace;
+	private byte[] characterSpace;
+	private byte[] wordSpace;
+
 	public ClipGenerator(final int wpm, final int fwpm, final int freqHz) {
 		this.wpm = wpm;
 		this.fwpm = fwpm;
@@ -91,11 +97,14 @@ public class ClipGenerator {
 		// http://sv8gxc.blogspot.co.uk/2010/09/morse-code-101-in-wpm-bw-snr.html
 		ditDurationSeconds = wpmToSeconds(wpm);
 		ditMs = (long) (ditDurationSeconds * 1000.0);
-		ditClip = samplesToClip(createPulse(ditDurationSeconds)); 
-		dahClip = samplesToClip(createPulse(ditDurationSeconds * 3.0));
+		dit = createPulse(ditDurationSeconds);
+		ditClip = samplesToClip(dit); 
+		dah = createPulse(ditDurationSeconds * 3.0);
+		dahClip = samplesToClip(dah);
 		dahMs = ditMs * 3;
 		final double fudge = 1.0;   // sounds better to me with a fudge of 0.3 - shorter gap between elements.
-		elementSpaceClip = samplesToClip(createSilence(ditDurationSeconds * fudge));
+		elementSpace = createSilence(ditDurationSeconds * fudge);
+		elementSpaceClip = samplesToClip(elementSpace);
 		elementSpaceMs = ditMs;
 		LOGGER.debug("ditMs: " + ditMs + " dahMs: " + dahMs + " elSp: " + elementSpaceMs);
 	}
@@ -103,9 +112,11 @@ public class ClipGenerator {
 	private void initialiseSpacing() {
 		final double farnsworthDitDurationSeconds = wpmToSeconds(fwpm);
 		final long farnsworthDitDurationMs = (long) (farnsworthDitDurationSeconds * 1000.0);
-		characterSpaceClip = samplesToClip(createSilence(farnsworthDitDurationSeconds * 3.0));
+		characterSpace = createSilence(farnsworthDitDurationSeconds * 3.0);
+		characterSpaceClip = samplesToClip(characterSpace);
 		characterSpaceMs = farnsworthDitDurationMs * 3;
-		wordSpaceClip = samplesToClip(createSilence(farnsworthDitDurationSeconds * 7.0));
+		wordSpace = createSilence(farnsworthDitDurationSeconds * 7.0);
+		wordSpaceClip = samplesToClip(wordSpace);
 		wordSpaceMs = farnsworthDitDurationMs * 7;
 		LOGGER.debug("charSp: " + characterSpaceMs + " wdSp: " + wordSpaceMs);
 	}
