@@ -27,6 +27,7 @@ public class TestMorseCharacter {
 		assertThat(MorseCharacter.fromString("?"), equalTo(Optional.of(MorseCharacter.QUESTION)));
 		assertThat(MorseCharacter.fromString("="), equalTo(Optional.of(MorseCharacter.EQUAL)));
 		assertThat(MorseCharacter.fromString("7"), equalTo(Optional.of(MorseCharacter.D7)));
+		assertThat(MorseCharacter.fromString(" "), equalTo(Optional.of(MorseCharacter.SPC)));
 	}
 
 	@Test
