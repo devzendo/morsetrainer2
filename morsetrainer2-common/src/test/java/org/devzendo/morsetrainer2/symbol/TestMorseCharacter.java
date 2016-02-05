@@ -43,4 +43,22 @@ public class TestMorseCharacter {
 		assertThat(MorseCharacter.KN.getPulses(), equalTo(new Pulse[] {Pulse.dah, Pulse.dit, Pulse.dah, Pulse.dah, Pulse.dit}));
 		assertThat(MorseCharacter.A.getPulses(), equalTo(new Pulse[] {Pulse.dit, Pulse.dah}));
 	}
+	
+	@Test
+	public void testValidFromChar() {
+		assertThat(MorseCharacter.fromChar('a'), equalTo(Optional.of(MorseCharacter.A)));
+		assertThat(MorseCharacter.fromChar('S'), equalTo(Optional.of(MorseCharacter.S)));
+		assertThat(MorseCharacter.fromChar('?'), equalTo(Optional.of(MorseCharacter.QUESTION)));
+		assertThat(MorseCharacter.fromChar('='), equalTo(Optional.of(MorseCharacter.EQUAL)));
+		assertThat(MorseCharacter.fromChar('7'), equalTo(Optional.of(MorseCharacter.D7)));
+		assertThat(MorseCharacter.fromChar(' '), equalTo(Optional.of(MorseCharacter.SPC)));
+	}
+
+	@Test
+	public void testInvalidFromChar() {
+		assertThat(MorseCharacter.fromChar('~'), equalTo(Optional.empty()));
+		assertThat(MorseCharacter.fromChar('<'), equalTo(Optional.empty()));
+		assertThat(MorseCharacter.fromChar('>'), equalTo(Optional.empty()));
+	}
+
 }

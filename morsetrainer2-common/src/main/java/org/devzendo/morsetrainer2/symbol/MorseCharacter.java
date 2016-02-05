@@ -64,9 +64,14 @@ public enum MorseCharacter {
 	FULLSTOP(".", ".-.-.-");
 	
 	private static final Map<String, MorseCharacter> stringToMorseCharacter = new HashMap<>();
+	private static final Map<Character, MorseCharacter> charToMorseCharacter = new HashMap<>();
 	static {
 		for (MorseCharacter mc: MorseCharacter.values()) {
-			stringToMorseCharacter.put(mc.toString(), mc);
+			final String mcToString = mc.toString();
+			stringToMorseCharacter.put(mcToString, mc);
+			if (mcToString.length() == 1) {
+				charToMorseCharacter.put(new Character(mcToString.charAt(0)), mc);
+			}
 		}
 	};
 
@@ -111,11 +116,10 @@ public enum MorseCharacter {
 		if (trimmed.length() == 0) {
 			return Optional.empty();
 		}
-		final MorseCharacter morseCharacter = stringToMorseCharacter.get(trimmed);
-		if (morseCharacter == null) {
-			return Optional.empty();
-		}
-		return Optional.of(morseCharacter);
+		return Optional.ofNullable(stringToMorseCharacter.get(trimmed));
 	}
 
+	public static Optional<MorseCharacter> fromChar(final char ch) {
+		return Optional.<MorseCharacter>ofNullable(charToMorseCharacter.get(Character.toUpperCase(ch)));
+	}
 }
