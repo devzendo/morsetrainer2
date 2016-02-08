@@ -65,12 +65,24 @@ public enum MorseCharacter {
 	
 	private static final Map<String, MorseCharacter> stringToMorseCharacter = new HashMap<>();
 	private static final Map<Character, MorseCharacter> charToMorseCharacter = new HashMap<>();
+	private static final Map<String, MorseCharacter> prosignTextToMorseCharacter = new HashMap<>();
+	
 	static {
 		for (MorseCharacter mc: MorseCharacter.values()) {
 			final String mcToString = mc.toString();
+			
 			stringToMorseCharacter.put(mcToString, mc);
+			
 			if (mcToString.length() == 1) {
 				charToMorseCharacter.put(new Character(mcToString.charAt(0)), mc);
+			}
+			
+			if (mcToString.charAt(0) == '<') {
+				// 0 1 2 3 length 4
+				// < K N >
+				final String prosignText = mcToString.substring(1, mcToString.length() - 1);
+				System.out.println("putting prosign '" + prosignText + "' as " + mc);
+				prosignTextToMorseCharacter.put(prosignText, mc);
 			}
 		}
 	};
@@ -121,5 +133,12 @@ public enum MorseCharacter {
 
 	public static Optional<MorseCharacter> fromChar(final char ch) {
 		return Optional.<MorseCharacter>ofNullable(charToMorseCharacter.get(Character.toUpperCase(ch)));
+	}
+
+	public static Optional<MorseCharacter> fromProsignText(final String string) {
+		if (string == null) {
+			return Optional.empty();
+		}
+		return Optional.<MorseCharacter>ofNullable(prosignTextToMorseCharacter.get(string.toUpperCase()));
 	}
 }

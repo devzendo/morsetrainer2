@@ -61,4 +61,16 @@ public class TestMorseCharacter {
 		assertThat(MorseCharacter.fromChar('>'), equalTo(Optional.empty()));
 	}
 
+	@Test
+	public void testValidFromProsignText() {
+		assertThat(MorseCharacter.fromProsignText("<KN>"), equalTo(Optional.empty()));
+		// yes, fromProsignText does not use < >, just text in between them
+		
+		assertThat(MorseCharacter.fromProsignText("KN"), equalTo(Optional.of(MorseCharacter.KN)));
+		assertThat(MorseCharacter.fromProsignText("kn"), equalTo(Optional.of(MorseCharacter.KN)));
+		assertThat(MorseCharacter.fromProsignText("qz"), equalTo(Optional.empty()));
+		assertThat(MorseCharacter.fromProsignText("k"), equalTo(Optional.empty()));
+		assertThat(MorseCharacter.fromProsignText(""), equalTo(Optional.empty()));
+		assertThat(MorseCharacter.fromProsignText(null), equalTo(Optional.empty()));
+	}
 }
