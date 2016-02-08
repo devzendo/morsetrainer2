@@ -81,7 +81,6 @@ public enum MorseCharacter {
 				// 0 1 2 3 length 4
 				// < K N >
 				final String prosignText = mcToString.substring(1, mcToString.length() - 1);
-				System.out.println("putting prosign '" + prosignText + "' as " + mc);
 				prosignTextToMorseCharacter.put(prosignText, mc);
 			}
 		}
