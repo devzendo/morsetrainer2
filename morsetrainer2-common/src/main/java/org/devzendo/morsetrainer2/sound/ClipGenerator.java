@@ -5,6 +5,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 
+import org.devzendo.morsetrainer2.symbol.Pulse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +79,22 @@ public class ClipGenerator {
 
 	public Clip getWordSpace() {
 		return wordSpaceClip;
+	}
+
+	public Clip translate(final Pulse pulse) {
+		switch (pulse) {
+		case dit:
+			return getDit();
+		case dah:
+			return getDah();
+		case ch:
+			return getCharacterSpace();
+		case el:
+			return getElementSpace();
+		default: // sealed case classes FTW!
+		case wo:
+			return getWordSpace();
+		}
 	}
 
 	private Clip samplesToClip(final byte[] out) {
