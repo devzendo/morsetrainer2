@@ -34,8 +34,35 @@ public class Main {
 			case "-version":
 				showVersion(properties);
 				finish();
+			case "-usage":
+			case "-?":
+			case "-help":
+				usage();
+				finish();
 			}
 		}
+	}
+
+	private void usage() {
+		LOGGER.info("java -jar morsetrainer2.jar [options]");
+		LOGGER.info("Options:");
+		LOGGER.info("-wpm <words per min>  - set the speed in words per minute");
+		LOGGER.info("                        Default is 12 WPM if not given");
+		LOGGER.info("-fwpm <words per min> - set the Farnsworth speed in words per minute");
+		LOGGER.info("                        Default matches the WPM if not given");
+		LOGGER.info("-freq <Hz>            - set the tone frequency in Hertz");
+		LOGGER.info("                        Default is 600 Hz if not given");
+		LOGGER.info("");
+		LOGGER.info("-version              - show the version number");
+		LOGGER.info("-? or -help or -usage - show this usage summary");
+		LOGGER.info("");
+        LOGGER.info("Log4j output control options:");
+        LOGGER.info("-debug                - set the log level to debug (default is info)");
+        LOGGER.info("-warn                 - set the log level to warning");
+        LOGGER.info("-level                - show log levels of each log line output");
+        LOGGER.info("-classes              - show class names in each log line output");
+        LOGGER.info("-threads              - show thread names in each log line output");
+        LOGGER.info("-times                - show timing data in each log line output");
 	}
 
 	private void finish() {
