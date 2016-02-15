@@ -30,6 +30,16 @@ public class TestMain {
 		constructWithFailure("-wpm must be followed by a speed in words per minute", "-wpm", "zounds");
 	}
 
+	@Test
+	public void wpmUnderRange() {
+		constructWithFailure("-wpm must be followed by a speed in words per minute in the range 12 to 60", "-wpm", "11");
+	}
+
+	@Test
+	public void wpmOverRange() {
+		constructWithFailure("-wpm must be followed by a speed in words per minute in the range 12 to 60", "-wpm", "61");
+	}
+
 	private void constructWithFailure(final String message, final String ... args) {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage(message);

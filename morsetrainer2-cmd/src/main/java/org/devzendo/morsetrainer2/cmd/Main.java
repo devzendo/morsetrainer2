@@ -49,13 +49,17 @@ public class Main {
 					final String nextArg = finalArgList.get(++i);
 					try {
 						wpm = Integer.parseInt(nextArg);
+						if (wpm < 12 || wpm > 60) {
+							badArg = true;
+							LOGGER.error("The wpm '" + nextArg + "' is not in the range 12 to 60");
+						}
 					} catch (NumberFormatException nfe) {
 						badArg = true;
 						LOGGER.error("The wpm '" + nextArg + "' is not an integer");
 					}
 				}
 				if (badArg) {
-					throw new IllegalArgumentException("-wpm must be followed by a speed in words per minute");
+					throw new IllegalArgumentException("-wpm must be followed by a speed in words per minute in the range 12 to 60");
 				}
 				
 			}
@@ -65,23 +69,24 @@ public class Main {
 	private void usage() {
 		LOGGER.info("java -jar morsetrainer2.jar [options]");
 		LOGGER.info("Options:");
-		LOGGER.info("-wpm <words per min>  - set the speed in words per minute");
+		LOGGER.info("-wpm <words per min>  - Set the speed in words per minute");
 		LOGGER.info("                        Default is 12 WPM if not given");
-		LOGGER.info("-fwpm <words per min> - set the Farnsworth speed in words per minute");
+		LOGGER.info("                        Must be between 12 and 60");
+		LOGGER.info("-fwpm <words per min> - Set the Farnsworth speed in words per minute");
 		LOGGER.info("                        Default matches the WPM if not given");
-		LOGGER.info("-freq <Hz>            - set the tone frequency in Hertz");
+		LOGGER.info("-freq <Hz>            - Set the tone frequency in Hertz");
 		LOGGER.info("                        Default is 600 Hz if not given");
 		LOGGER.info("");
-		LOGGER.info("-version              - show the version number");
-		LOGGER.info("-? or -help or -usage - show this usage summary");
+		LOGGER.info("-version              - Show the version number");
+		LOGGER.info("-? or -help or -usage - Show this usage summary");
 		LOGGER.info("");
         LOGGER.info("Log4j output control options:");
-        LOGGER.info("-debug                - set the log level to debug (default is info)");
-        LOGGER.info("-warn                 - set the log level to warning");
-        LOGGER.info("-level                - show log levels of each log line output");
-        LOGGER.info("-classes              - show class names in each log line output");
-        LOGGER.info("-threads              - show thread names in each log line output");
-        LOGGER.info("-times                - show timing data in each log line output");
+        LOGGER.info("-debug                - Set the log level to debug (default is info)");
+        LOGGER.info("-warn                 - Set the log level to warning");
+        LOGGER.info("-level                - Show log levels of each log line output");
+        LOGGER.info("-classes              - Show class names in each log line output");
+        LOGGER.info("-threads              - Show thread names in each log line output");
+        LOGGER.info("-times                - Show timing data in each log line output");
 	}
 
 	private void finish() {
