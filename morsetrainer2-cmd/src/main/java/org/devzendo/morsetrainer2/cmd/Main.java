@@ -120,10 +120,6 @@ public class Main {
 		System.exit(0);
 	}
 
-	private void fail() {
-		System.exit(1);
-	}
-
 	private void showVersion(final Properties properties) {
 		final String version = properties.getProperty("version");
 		LOGGER.info("MorseTrainer2 version " + version);
@@ -137,6 +133,7 @@ public class Main {
 			new Main(finalArgList, properties);
 		} catch (final Exception e) {
 			LOGGER.error(e.getMessage(), e);
+			System.exit(1);
 		}
 	}
 }

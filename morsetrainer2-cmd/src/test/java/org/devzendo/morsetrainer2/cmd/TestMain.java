@@ -1,13 +1,12 @@
 package org.devzendo.morsetrainer2.cmd;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.Properties;
 
 import org.devzendo.morsetrainer2.logging.LoggingUnittest;
-import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
