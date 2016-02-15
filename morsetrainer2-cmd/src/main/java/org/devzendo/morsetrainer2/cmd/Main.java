@@ -13,7 +13,7 @@ public class Main {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-	private static Properties getPropertiesResource() {
+	static Properties getPropertiesResource() {
 		final String propertiesResourceName = "morsetrainer2.properties";
 		final Properties propertiesResource = ResourceLoader.readPropertiesResource(propertiesResourceName);
 		if (propertiesResource == null) {
@@ -28,8 +28,11 @@ public class Main {
 		Integer fwpm = null;
 		Integer freqHz = null;
 
-		for (int i = 0; i < finalArgList.size(); i++) {
+		final int numArgs = finalArgList.size();
+		for (int i = 0; i < numArgs; i++) {
+			boolean badArg = false;
 			final String arg = finalArgList.get(i);
+			
 			switch (arg) {
 			case "-version":
 				showVersion(properties);
@@ -39,6 +42,22 @@ public class Main {
 			case "-help":
 				usage();
 				finish();
+			case "-wpm":
+				if (i == numArgs - 1) {
+					badArg = true;
+				} else {
+					final String nextArg = finalArgList.get(++i);
+					try {
+						wpm = Integer.parseInt(nextArg);
+					} catch (NumberFormatException nfe) {
+						badArg = true;
+						LOGGER.error("The wpm '" + nextArg + "' is not an integer");
+					}
+				}
+				if (badArg) {
+					throw new IllegalArgumentException("-wpm must be followed by a speed in words per minute");
+				}
+				
 			}
 		}
 	}
@@ -82,6 +101,10 @@ public class Main {
 		final Logging logging = Logging.getInstance();
 		final List<String> finalArgList = logging.setupLoggingFromArgs(Arrays.asList(args));
 		final Properties properties = getPropertiesResource();
-		new Main(finalArgList, properties);
+		try {
+			new Main(finalArgList, properties);
+		} catch (final Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 	}
 }
