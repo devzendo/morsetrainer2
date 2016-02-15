@@ -25,21 +25,10 @@ public class Main {
 
 	private int cmdIndex = 0;
 	private List<String> finalArgList;
-
-	private boolean hasNextArg() {
-		return cmdIndex < finalArgList.size();
-	}
-
-	private String nextArg() {
-		return finalArgList.get(cmdIndex++);
-	}
+	private Options options = new Options();
 
 	public Main(final List<String> finalArgList, final Properties properties) {
 		this.finalArgList = finalArgList;
-		Integer wpm = null;
-		Integer fwpm = null;
-		Integer freqHz = null;
-
 		while (hasNextArg()) {
 			final String arg = nextArg();
 
@@ -53,18 +42,40 @@ public class Main {
 				usage();
 				finish();
 			case "-wpm":
-				wpm = nextNumArg(12, 60, "wpm");
+				options.wpm = nextNumArg(12, 60, "wpm");
 				break;
 			case "-fwpm":
-				fwpm = nextNumArg(12, 60, "fwpm");
+				options.fwpm = nextNumArg(12, 60, "fwpm");
 				break;
 			case "-freq":
-				freqHz = nextNumArg(400, 800, "freq");
+				options.freqHz = nextNumArg(400, 800, "freq");
 				break;
 			}
 		}
+		// Fill in defaults
+		if (options.wpm == null) {
+			options.wpm = 12;
+		}
+		if (options.fwpm == null) {
+			options.fwpm = options.wpm;
+		}
+		if (options.freqHz == null) {
+			options.freqHz = 600;
+		}
 	}
 
+	public Options getOptions() {
+		return options;
+	}
+	
+	private boolean hasNextArg() {
+		return cmdIndex < finalArgList.size();
+	}
+	
+	private String nextArg() {
+		return finalArgList.get(cmdIndex++);
+	}
+	
 	private Integer nextNumArg(int low, int high, String name) {
 		if (hasNextArg()) {
 			final String nextArg = nextArg();

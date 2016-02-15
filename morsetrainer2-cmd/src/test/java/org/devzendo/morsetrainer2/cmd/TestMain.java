@@ -1,9 +1,13 @@
 package org.devzendo.morsetrainer2.cmd;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.*;
+
 import java.util.Arrays;
 import java.util.Properties;
 
 import org.devzendo.morsetrainer2.logging.LoggingUnittest;
+import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -86,7 +90,34 @@ public class TestMain {
 		constructWithFailure("-freq must be in the range 400 to 800", "-freq", "801");
 	}
 
+	// full options
+	@Test
+	public void fwpmSameAsWpmIfNotGiven() throws Exception {
+		final Options options = construct("-wpm", "17").getOptions();
+		assertThat(options.wpm, equalTo(new Integer("17")));
+		assertThat(options.fwpm, equalTo(new Integer("17")));
+	}
 
+	@Test
+	public void freqDefaultedInIfNotGiven() throws Exception {
+		final Options options = construct("-wpm", "17").getOptions();
+		assertThat(options.freqHz, equalTo(new Integer("600")));
+	}
+
+	@Test
+	public void wpmAndFwpmAndFreqDefaultedInIfNotGiven() throws Exception {
+		final Options options = construct().getOptions();
+		assertThat(options.wpm, equalTo(new Integer("12")));
+		assertThat(options.fwpm, equalTo(new Integer("12")));
+		assertThat(options.freqHz, equalTo(new Integer("600")));
+	}
+
+	@Test
+	public void fwpmCanBeVaried() throws Exception {
+		final Options options = construct("-fwpm", "17").getOptions();
+		assertThat(options.wpm, equalTo(new Integer("12")));
+		assertThat(options.fwpm, equalTo(new Integer("17")));
+	}
 	
 	private void constructWithFailure(final String message, final String ... args) {
 		thrown.expect(IllegalArgumentException.class);
