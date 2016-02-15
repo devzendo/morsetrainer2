@@ -23,16 +23,26 @@ public class Main {
 		return propertiesResource;
 	}
 
+	private int cmdIndex = 0;
+	private List<String> finalArgList;
+
+	private boolean hasNextArg() {
+		return cmdIndex < finalArgList.size();
+	}
+
+	private String nextArg() {
+		return finalArgList.get(cmdIndex++);
+	}
+
 	public Main(final List<String> finalArgList, final Properties properties) {
+		this.finalArgList = finalArgList;
 		Integer wpm = null;
 		Integer fwpm = null;
 		Integer freqHz = null;
 
-		final int numArgs = finalArgList.size();
-		for (int i = 0; i < numArgs; i++) {
-			boolean badArg = false;
-			final String arg = finalArgList.get(i);
-			
+		while (hasNextArg()) {
+			final String arg = nextArg();
+
 			switch (arg) {
 			case "-version":
 				showVersion(properties);
@@ -43,27 +53,30 @@ public class Main {
 				usage();
 				finish();
 			case "-wpm":
-				if (i == numArgs - 1) {
-					badArg = true;
-				} else {
-					final String nextArg = finalArgList.get(++i);
-					try {
-						wpm = Integer.parseInt(nextArg);
-						if (wpm < 12 || wpm > 60) {
-							badArg = true;
-							LOGGER.error("The wpm '" + nextArg + "' is not in the range 12 to 60");
-						}
-					} catch (NumberFormatException nfe) {
-						badArg = true;
-						LOGGER.error("The wpm '" + nextArg + "' is not an integer");
-					}
-				}
-				if (badArg) {
-					throw new IllegalArgumentException("-wpm must be followed by a speed in words per minute in the range 12 to 60");
-				}
-				
+				wpm = nextNumArg(12, 60, "wpm");
+				break;
+			case "-fwpm":
+				fwpm = nextNumArg(12, 60, "fwpm");
+				break;
 			}
 		}
+	}
+
+	private Integer nextNumArg(int low, int high, String name) {
+		if (hasNextArg()) {
+			final String nextArg = nextArg();
+			try {
+				final Integer out = Integer.parseInt(nextArg);
+				if (out < low || out > high) {
+					LOGGER.error("The " + name + " '" + nextArg + "' is not in the range " + low + " to " + high);
+				} else {
+					return out;
+				}
+			} catch (NumberFormatException nfe) {
+				LOGGER.error("The " + name + " '" + nextArg + "' is not an integer");
+			}
+		}
+		throw new IllegalArgumentException("-" + name + " must be in the range " + low + " to " + high);
 	}
 
 	private void usage() {
@@ -80,13 +93,13 @@ public class Main {
 		LOGGER.info("-version              - Show the version number");
 		LOGGER.info("-? or -help or -usage - Show this usage summary");
 		LOGGER.info("");
-        LOGGER.info("Log4j output control options:");
-        LOGGER.info("-debug                - Set the log level to debug (default is info)");
-        LOGGER.info("-warn                 - Set the log level to warning");
-        LOGGER.info("-level                - Show log levels of each log line output");
-        LOGGER.info("-classes              - Show class names in each log line output");
-        LOGGER.info("-threads              - Show thread names in each log line output");
-        LOGGER.info("-times                - Show timing data in each log line output");
+		LOGGER.info("Log4j output control options:");
+		LOGGER.info("-debug                - Set the log level to debug (default is info)");
+		LOGGER.info("-warn                 - Set the log level to warning");
+		LOGGER.info("-level                - Show log levels of each log line output");
+		LOGGER.info("-classes              - Show class names in each log line output");
+		LOGGER.info("-threads              - Show thread names in each log line output");
+		LOGGER.info("-times                - Show timing data in each log line output");
 	}
 
 	private void finish() {
