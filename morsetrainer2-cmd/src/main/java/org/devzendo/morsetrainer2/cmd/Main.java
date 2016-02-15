@@ -58,6 +58,9 @@ public class Main {
 			case "-fwpm":
 				fwpm = nextNumArg(12, 60, "fwpm");
 				break;
+			case "-freq":
+				freqHz = nextNumArg(400, 800, "freq");
+				break;
 			}
 		}
 	}

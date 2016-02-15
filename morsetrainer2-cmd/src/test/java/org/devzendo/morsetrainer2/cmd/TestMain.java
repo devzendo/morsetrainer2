@@ -64,6 +64,28 @@ public class TestMain {
 		constructWithFailure("-fwpm must be in the range 12 to 60", "-fwpm", "61");
 	}
 
+	// FREQ
+	
+	@Test
+	public void freqAsLast() {
+		constructWithFailure("-freq must be in the range 400 to 800", "-freq");
+	}
+
+	@Test
+	public void freqWithNonInteger() {
+		constructWithFailure("-freq must be in the range 400 to 800", "-freq", "zounds");
+	}
+
+	@Test
+	public void freqUnderRange() {
+		constructWithFailure("-freq must be in the range 400 to 800", "-freq", "399");
+	}
+
+	@Test
+	public void freqOverRange() {
+		constructWithFailure("-freq must be in the range 400 to 800", "-freq", "801");
+	}
+
 
 	
 	private void constructWithFailure(final String message, final String ... args) {
