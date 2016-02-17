@@ -44,6 +44,11 @@ public class TestTextToMorseCharacterParser {
 	}
 
 	@Test
+	public void parseToString() {
+		assertThat(TextToMorseCharacterParser.parseToString("a=<kn>3<cl>."), equalTo("A=<KN>3<CL>."));
+	}
+
+	@Test
 	public void unfinishedProsign() {
 		assertThat(parse("a<kn"), equalTo(new MorseCharacter[] { MorseCharacter.A }));
 		assertThat(parse(">a"), equalTo(new MorseCharacter[] { MorseCharacter.A }));

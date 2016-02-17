@@ -40,6 +40,34 @@ public class TextToMorseCharacterParser implements Iterator<MorseCharacter> {
 		return list.toArray(new MorseCharacter[0]);
 	}
 
+	/**
+	 * Parse any ASCII text, possibly containing <PR> style prosigns to an array
+	 * of MorseCharacters. Unknown characters are omitted; multiple spaces are
+	 * preserved; other white space ignored.
+	 * 
+	 * Builds up an internal list, then converts to a String - may not be the
+	 * best use of memory!
+	 * 
+	 * @param string
+	 *            any ASCII text.
+	 * @return possibly empty String, never null.
+	 */
+	public static String parseToString(String string) {
+		LOGGER.debug("Parsing '" + string + "'");
+		final StringBuilder sb = new StringBuilder();;
+
+		if (string != null && string.length() != 0) {
+			final TextToMorseCharacterParser parser = new TextToMorseCharacterParser();
+			parser.addString(string);
+			while (parser.hasNext()) {
+				final MorseCharacter next = parser.next();
+				sb.append(next.toString());
+			}
+		}
+
+		return sb.toString();
+	}
+
 	private final LinkedList<Character> inputText = new LinkedList<>();
 	private MorseCharacter store = null;
 	private boolean inProsignScan = false;
