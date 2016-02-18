@@ -1,11 +1,23 @@
 package org.devzendo.morsetrainer2.cmd;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.devzendo.commoncode.logging.Logging;
 import org.devzendo.commoncode.resource.ResourceLoader;
+import org.devzendo.morsetrainer2.cmd.Options.Source;
+import org.devzendo.morsetrainer2.qso.CallsignGenerator;
+import org.devzendo.morsetrainer2.qso.QSOGenerator;
+import org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +41,13 @@ public class Main {
 
 	public Main(final List<String> finalArgList, final Properties properties) {
 		this.finalArgList = finalArgList;
+		final CallsignGenerator callsignGenerator = new CallsignGenerator();
+		final QSOGenerator qsoGenerator = new QSOGenerator(callsignGenerator);
+
+		// Default source
+		options.source = Options.Source.All;
+		options.sourceString = options.source.content();
+
 		while (hasNextArg()) {
 			final String arg = nextArg();
 
@@ -50,6 +69,43 @@ public class Main {
 			case "-freq":
 				options.freqHz = nextNumArg(400, 800, "freq");
 				break;
+			case "-source":
+				options.source = nextSourceArg();
+				System.out.println("source is " + options.source);
+				switch (options.source) {
+				case All:
+				case Letters:
+				case Numbers:
+				case Prosigns:
+				case Punctuation:
+					options.sourceString = options.source.content();
+					break;
+				case QSO:
+					options.sourceString = qsoGenerator.generate();
+					break;
+				case Callsigns:
+					options.sourceString = callsignGenerator.generate();
+					break;
+				case Set:
+					if (hasNextArg()) {
+						final String setString = nextArg();
+						options.sourceString = TextToMorseCharacterParser.parseToString(setString);
+					} else {
+						throw new IllegalArgumentException("-source set must be followed by a string of source characters");
+					}
+					break;
+				case File:
+					if (hasNextArg()) {
+						options.sourceString = TextToMorseCharacterParser.parseToString(readFile(new File(nextArg())));
+					} else {
+						throw new IllegalArgumentException("-source file must be followed by a file name");
+					}
+					break;
+				case Stdin:
+					options.sourceString = TextToMorseCharacterParser.parseToString(readStdin());
+					break;
+				}
+				break;
 			}
 		}
 		// Fill in defaults
@@ -67,15 +123,15 @@ public class Main {
 	public Options getOptions() {
 		return options;
 	}
-	
+
 	private boolean hasNextArg() {
 		return cmdIndex < finalArgList.size();
 	}
-	
+
 	private String nextArg() {
 		return finalArgList.get(cmdIndex++);
 	}
-	
+
 	private Integer nextNumArg(int low, int high, String name) {
 		if (hasNextArg()) {
 			final String nextArg = nextArg();
@@ -93,8 +149,58 @@ public class Main {
 		throw new IllegalArgumentException("-" + name + " must be in the range " + low + " to " + high);
 	}
 
+	private Source nextSourceArg() {
+		if (hasNextArg()) {
+			final Optional<Source> out = Options.Source.fromString(nextArg());
+			if (out.isPresent()) {
+				return out.get();
+			}
+		}
+		throw new IllegalArgumentException(
+				"-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|qso]");
+	}
+
+	private String readFile(final File file) {
+		try {
+			return readInputStream(new FileInputStream(file));
+		} catch (final FileNotFoundException e) {
+			final String msg = "File '" + file.getAbsolutePath() + "' not found";
+			LOGGER.error(msg);
+			throw new IllegalArgumentException(msg, e);
+		}
+	}
+
+	private String readStdin() {
+		return readInputStream(System.in);
+	}
+
+	private String readInputStream(final InputStream in) {
+		try {
+			final StringBuilder sb = new StringBuilder();
+			final BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String line;
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+			return sb.toString();
+		} catch (final IOException ioe) {
+			final String msg = "Failure reading input: " + ioe.getMessage();
+			LOGGER.error(msg);
+			throw new RuntimeException(msg, ioe);
+		} finally {
+			try {
+				in.close();
+			} catch (final IOException ioe) {
+				final String msg = "Failure closing input: " + ioe.getMessage();
+				LOGGER.error(msg);
+				throw new RuntimeException(msg, ioe);
+			}
+		}
+	}
+	
 	private void usage() {
-		LOGGER.info("java -jar morsetrainer2.jar [options]");
+		//           01234567890123456789012345678901234567890123456789012345678901234567890123456789
+		LOGGER.info("java -jar morsetrainer2.jar [options] [source]");
 		LOGGER.info("Options:");
 		LOGGER.info("-wpm <words per min>  - Set the speed in words per minute");
 		LOGGER.info("                        Default is 12 WPM if not given");
@@ -104,7 +210,19 @@ public class Main {
 		LOGGER.info("-freq <Hz>            - Set the tone frequency in Hertz");
 		LOGGER.info("                        Default is 600 Hz if not given");
 		LOGGER.info("");
-		LOGGER.info("-version              - Show the version number");
+		LOGGER.info("Source:");
+		LOGGER.info("-source [all|letters|numbers|punctuation|prosigns|callsigns|qso|set|");
+		LOGGER.info("         stdin|-|file]");
+		LOGGER.info("-source set '....'");
+		LOGGER.info("                      - Use letters, numbers etc. as the characters");
+		LOGGER.info("                        to send, or with set '...', use the specific");
+		LOGGER.info("                        characters specified.");
+		LOGGER.info("                        Default is 'all' if not given.");
+		LOGGER.info("-source stdin   or  -source -");
+		LOGGER.info("                      - Read the set of characters from standard input.");
+		LOGGER.info("-source file <filename>");
+		LOGGER.info("                      - Read the set of characters from a file.");
+		LOGGER.info("");
 		LOGGER.info("-? or -help or -usage - Show this usage summary");
 		LOGGER.info("");
 		LOGGER.info("Log4j output control options:");
