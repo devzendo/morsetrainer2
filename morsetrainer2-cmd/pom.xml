@@ -106,7 +106,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 		<dependency>
 			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-all</artifactId>
+			<artifactId>java-hamcrest</artifactId>
 			<scope>test</scope>
 		</dependency>
 
