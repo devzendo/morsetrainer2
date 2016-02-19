@@ -14,9 +14,9 @@ import java.util.Properties;
 
 import org.devzendo.commoncode.logging.Logging;
 import org.devzendo.commoncode.resource.ResourceLoader;
-import org.devzendo.morsetrainer2.cmd.Options.Source;
 import org.devzendo.morsetrainer2.qso.CallsignGenerator;
 import org.devzendo.morsetrainer2.qso.QSOGenerator;
+import org.devzendo.morsetrainer2.source.Source;
 import org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,9 +186,9 @@ public class Main {
 		throw new IllegalArgumentException("-" + name + " must be in the range " + low + " to " + high);
 	}
 
-	private Source nextSourceArg() {
+	private Source.SourceType nextSourceArg() {
 		if (hasNextArg()) {
-			final Optional<Source> out = Options.Source.fromString(nextArg());
+			final Optional<Source.SourceType> out = Source.SourceType.fromString(nextArg());
 			if (out.isPresent()) {
 				return out.get();
 			}

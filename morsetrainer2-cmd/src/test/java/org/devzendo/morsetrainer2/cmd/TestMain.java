@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import org.devzendo.morsetrainer2.logging.LoggingUnittest;
+import org.devzendo.morsetrainer2.source.Source;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -129,63 +130,63 @@ public class TestMain {
 	@Test
 	public void defaultSource() throws Exception {
 		final Options options = construct().getOptions();
-		assertThat(options.source, equalTo(Options.Source.All));
+		assertThat(options.source, equalTo(Source.SourceType.All));
 		assertThat(options.sourceString, equalTo("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,./?+=<AR><AS><BK><BT><CL><CQ><HH><KA><KN><NR><SK><VE>"));
 	}
 
 	@Test
 	public void lettersSource() throws Exception {
 		final Options options = construct("-source", "LeTTeRs").getOptions();
-		assertThat(options.source, equalTo(Options.Source.Letters));
+		assertThat(options.source, equalTo(Source.SourceType.Letters));
 		assertThat(options.sourceString, equalTo("ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
 	}
 
 	@Test
 	public void numbersSource() throws Exception {
 		final Options options = construct("-source", "Numbers").getOptions();
-		assertThat(options.source, equalTo(Options.Source.Numbers));
+		assertThat(options.source, equalTo(Source.SourceType.Numbers));
 		assertThat(options.sourceString, equalTo("0123456789"));
 	}
 
 	@Test
 	public void punctuationSource() throws Exception {
 		final Options options = construct("-source", "punctuation").getOptions();
-		assertThat(options.source, equalTo(Options.Source.Punctuation));
+		assertThat(options.source, equalTo(Source.SourceType.Punctuation));
 		assertThat(options.sourceString, equalTo(",./?+="));
 	}
 
 	@Test
 	public void prosignsSource() throws Exception {
 		final Options options = construct("-source", "prosigns").getOptions();
-		assertThat(options.source, equalTo(Options.Source.Prosigns));
+		assertThat(options.source, equalTo(Source.SourceType.Prosigns));
 		assertThat(options.sourceString, equalTo("<AR><AS><BK><BT><CL><CQ><HH><KA><KN><NR><SK><VE>"));
 	}
 
 	@Test
 	public void callsignsSource() throws Exception {
 		final Options options = construct("-source", "Callsigns").getOptions();
-		assertThat(options.source, equalTo(Options.Source.Callsigns));
+		assertThat(options.source, equalTo(Source.SourceType.Callsigns));
 		// can't test source string, it's random
 	}
 
 	@Test
 	public void qsoSource() throws Exception {
 		final Options options = construct("-source", "QSO").getOptions();
-		assertThat(options.source, equalTo(Options.Source.QSO));
+		assertThat(options.source, equalTo(Source.SourceType.QSO));
 		// can't test source string, it's random
 	}
 
 	@Test
 	public void setSource() throws Exception {
 		final Options options = construct("-source", "set", "abcz<AR>").getOptions();
-		assertThat(options.source, equalTo(Options.Source.Set));
+		assertThat(options.source, equalTo(Source.SourceType.Set));
 		assertThat(options.sourceString, equalTo("ABCZ<AR>"));
 	}
 
 	@Test
 	public void fileSource() throws Exception {
 		final Options options = construct("-source", "file", "src/test/resources/input.txt").getOptions();
-		assertThat(options.source, equalTo(Options.Source.File));
+		assertThat(options.source, equalTo(Source.SourceType.File));
 		assertThat(options.sourceString, equalTo("ABCDE"));
 	}
 
@@ -222,7 +223,7 @@ public class TestMain {
 			System.setIn(bais);
 
 			final Options options = construct("-source", sourceName).getOptions();
-			assertThat(options.source, equalTo(Options.Source.Stdin));
+			assertThat(options.source, equalTo(Source.SourceType.Stdin));
 			assertThat(options.sourceString, equalTo("STDINTXT"));
 			
 		} finally {
