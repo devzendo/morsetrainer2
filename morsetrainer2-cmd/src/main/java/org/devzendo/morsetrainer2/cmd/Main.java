@@ -47,6 +47,7 @@ public class Main {
 		// Default source
 		options.source = Options.Source.All;
 		options.sourceString = options.source.content();
+		options.interactive = false;
 
 		while (hasNextArg()) {
 			final String arg = nextArg();
@@ -106,6 +107,9 @@ public class Main {
 					break;
 				}
 				break;
+			case "-interactive":
+				options.interactive = true;
+				break;
 			}
 		}
 		// Fill in defaults
@@ -118,6 +122,8 @@ public class Main {
 		if (options.freqHz == null) {
 			options.freqHz = 600;
 		}
+		
+		//final StreamGenerator streamGenerator = StreamGeneratorFactory(options.source).create();
 	}
 
 	public Options getOptions() {
@@ -209,6 +215,9 @@ public class Main {
 		LOGGER.info("                        Default matches the WPM if not given");
 		LOGGER.info("-freq <Hz>            - Set the tone frequency in Hertz");
 		LOGGER.info("                        Default is 600 Hz if not given");
+		LOGGER.info("-interactive          - Interactively query for what you heard, to test/assess");
+		LOGGER.info("                        your recognition progress. If not given, just plays/");
+		LOGGER.info("                        or records");
 		LOGGER.info("");
 		LOGGER.info("Source:");
 		LOGGER.info("-source [all|letters|numbers|punctuation|prosigns|callsigns|qso|set|");

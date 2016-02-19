@@ -51,4 +51,6 @@ public class Options {
 	
 	public Source source;
 	public String sourceString;
+	
+	public boolean interactive;
 }

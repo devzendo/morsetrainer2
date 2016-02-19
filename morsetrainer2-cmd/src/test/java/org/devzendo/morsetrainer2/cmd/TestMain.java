@@ -243,6 +243,16 @@ public class TestMain {
 		constructWithFailure("-source set must be followed by a string of source characters", "-source", "set");
 	}
 
+	@Test
+	public void defaultNonInteractive() throws Exception {
+		assertThat(construct().getOptions().interactive, equalTo(false));
+	}
+
+	@Test
+	public void interactive() throws Exception {
+		assertThat(construct("-interactive").getOptions().interactive, equalTo(true));
+	}
+
 	private void constructWithFailure(final String message, final String ... args) {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage(message);
