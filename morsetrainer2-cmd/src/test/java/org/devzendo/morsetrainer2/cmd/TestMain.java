@@ -5,8 +5,10 @@ import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -189,7 +191,7 @@ public class TestMain {
 
 	@Test
 	public void emptyFileSource() throws Exception {
-		constructWithFailure("-source file must be followed by a file name", "-source", "file");
+		constructWithFailure("-source <file> must be followed by a file name", "-source", "file");
 	}
 
 	@Test
@@ -240,7 +242,7 @@ public class TestMain {
 
 	@Test
 	public void emptySetSource() throws Exception {
-		constructWithFailure("-source set must be followed by a string of source characters", "-source", "set");
+		constructWithFailure("-source <set> must be followed by a string of source characters", "-source", "set");
 	}
 
 	@Test
@@ -253,6 +255,28 @@ public class TestMain {
 		assertThat(construct("-interactive").getOptions().interactive, equalTo(true));
 	}
 
+	@Test
+	public void nonexistentRecordFileIsFine() throws Exception {
+		final Options options = construct("-record", "target/nonexistent.wav").getOptions();
+		assertThat(options.recordFile.isPresent(), equalTo(true));
+		assertThat(options.recordFile.get(), equalTo(new File("target/nonexistent.wav")));
+	}
+
+	@Test
+	public void cannotOverwriteExistentRecordFile() throws Exception {
+		final File temp = Files.createTempFile("recording", ".wav").toFile();
+		try {
+			constructWithFailure("Cannot overwrite existing recording '" + temp.getAbsolutePath() + "'", "-record", temp.getAbsolutePath());
+		} finally {
+			assertThat(temp.delete(), equalTo(true));
+		}
+	}
+
+	@Test
+	public void emptyRecordFile() throws Exception {
+		constructWithFailure("-record <file> must be followed by a file name", "-record");
+	}
+	
 	private void constructWithFailure(final String message, final String ... args) {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage(message);

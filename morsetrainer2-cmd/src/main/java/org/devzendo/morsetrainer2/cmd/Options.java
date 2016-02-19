@@ -1,5 +1,6 @@
 package org.devzendo.morsetrainer2.cmd;
 
+import java.io.File;
 import java.util.Optional;
 
 public class Options {
@@ -49,8 +50,9 @@ public class Options {
 	public Integer fwpm;
 	public Integer freqHz;
 	
-	public Source source;
-	public String sourceString;
-	
-	public boolean interactive;
+	public Source source = Options.Source.All;
+	public String sourceString = source.content();
+
+	public boolean interactive = false;
+	public Optional<File> recordFile = Optional.empty();
 }

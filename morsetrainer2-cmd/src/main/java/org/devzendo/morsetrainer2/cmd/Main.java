@@ -44,11 +44,6 @@ public class Main {
 		final CallsignGenerator callsignGenerator = new CallsignGenerator();
 		final QSOGenerator qsoGenerator = new QSOGenerator(callsignGenerator);
 
-		// Default source
-		options.source = Options.Source.All;
-		options.sourceString = options.source.content();
-		options.interactive = false;
-
 		while (hasNextArg()) {
 			final String arg = nextArg();
 
@@ -92,14 +87,14 @@ public class Main {
 						final String setString = nextArg();
 						options.sourceString = TextToMorseCharacterParser.parseToString(setString);
 					} else {
-						throw new IllegalArgumentException("-source set must be followed by a string of source characters");
+						throw new IllegalArgumentException("-source <set> must be followed by a string of source characters");
 					}
 					break;
 				case File:
 					if (hasNextArg()) {
 						options.sourceString = TextToMorseCharacterParser.parseToString(readFile(new File(nextArg())));
 					} else {
-						throw new IllegalArgumentException("-source file must be followed by a file name");
+						throw new IllegalArgumentException("-source <file> must be followed by a file name");
 					}
 					break;
 				case Stdin:
@@ -110,6 +105,17 @@ public class Main {
 			case "-interactive":
 				options.interactive = true;
 				break;
+			case "-record":
+				if (hasNextArg()) {
+					final File recordingFile = new File(nextArg());
+					if (recordingFile.exists()) {
+						throw new IllegalArgumentException("Cannot overwrite existing recording '" + recordingFile.getAbsolutePath() + "'");
+					}
+					options.recordFile = Optional.of(recordingFile);
+				} else {
+					throw new IllegalArgumentException("-record <file> must be followed by a file name");
+				}
+				
 			}
 		}
 		// Fill in defaults
@@ -208,16 +214,18 @@ public class Main {
 		//           01234567890123456789012345678901234567890123456789012345678901234567890123456789
 		LOGGER.info("java -jar morsetrainer2.jar [options] [source]");
 		LOGGER.info("Options:");
-		LOGGER.info("-wpm <words per min>  - Set the speed in words per minute");
-		LOGGER.info("                        Default is 12 WPM if not given");
-		LOGGER.info("                        Must be between 12 and 60");
-		LOGGER.info("-fwpm <words per min> - Set the Farnsworth speed in words per minute");
-		LOGGER.info("                        Default matches the WPM if not given");
-		LOGGER.info("-freq <Hz>            - Set the tone frequency in Hertz");
-		LOGGER.info("                        Default is 600 Hz if not given");
+		LOGGER.info("-wpm <words per min>  - Set the speed in words per minute.");
+		LOGGER.info("                        Default is 12 WPM if not given.");
+		LOGGER.info("                        Must be between 12 and 60.");
+		LOGGER.info("-fwpm <words per min> - Set the Farnsworth speed in words per minute.");
+		LOGGER.info("                        Default matches the WPM if not given.");
+		LOGGER.info("-freq <Hz>            - Set the tone frequency in Hertz.");
+		LOGGER.info("                        Default is 600 Hz if not given.");
 		LOGGER.info("-interactive          - Interactively query for what you heard, to test/assess");
 		LOGGER.info("                        your recognition progress. If not given, just plays/");
-		LOGGER.info("                        or records");
+		LOGGER.info("                        or records.");
+		LOGGER.info("-record <filename>    - Records the Morse to a .wav file. Can't be used with");
+		LOGGER.info("                        -interactive mode. If not given, just plays to speakers.");
 		LOGGER.info("");
 		LOGGER.info("Source:");
 		LOGGER.info("-source [all|letters|numbers|punctuation|prosigns|callsigns|qso|set|");
@@ -235,12 +243,12 @@ public class Main {
 		LOGGER.info("-? or -help or -usage - Show this usage summary");
 		LOGGER.info("");
 		LOGGER.info("Log4j output control options:");
-		LOGGER.info("-debug                - Set the log level to debug (default is info)");
-		LOGGER.info("-warn                 - Set the log level to warning");
-		LOGGER.info("-level                - Show log levels of each log line output");
-		LOGGER.info("-classes              - Show class names in each log line output");
-		LOGGER.info("-threads              - Show thread names in each log line output");
-		LOGGER.info("-times                - Show timing data in each log line output");
+		LOGGER.info("-debug                - Set the log level to debug (default is info).");
+		LOGGER.info("-warn                 - Set the log level to warning.");
+		LOGGER.info("-level                - Show log levels of each log line output.");
+		LOGGER.info("-classes              - Show class names in each log line output.");
+		LOGGER.info("-threads              - Show thread names in each log line output.");
+		LOGGER.info("-times                - Show timing data in each log line output.");
 	}
 
 	private void finish() {
