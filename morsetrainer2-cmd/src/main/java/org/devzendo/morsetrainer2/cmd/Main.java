@@ -115,6 +115,30 @@ public class Main {
 				} else {
 					throw new IllegalArgumentException("-record <file> must be followed by a file name");
 				}
+				break;
+			case "-length":
+				boolean badArg = true;
+				if (hasNextArg()) {
+					final String lengthString = nextArg().trim();
+					if (lengthString.toLowerCase().equals("random")) {
+						badArg = false;
+						options.length = Optional.empty();
+					} else {
+						try {
+							final int parsedInt = Integer.parseInt(lengthString);
+							if (parsedInt >= 1 && parsedInt <= 9) {
+								badArg = false;
+								options.length = Optional.of(parsedInt);
+							}
+						} catch (final NumberFormatException nfe) {
+							// ok, just let badArg be true and fall thru...
+						}
+					}
+				}
+				if (badArg) {
+					throw new IllegalArgumentException("-length <1..9|random> must be followed by an number in the range 1 to 9, or 'random'");
+				}
+				break;
 				
 			}
 		}
@@ -128,7 +152,10 @@ public class Main {
 		if (options.freqHz == null) {
 			options.freqHz = 600;
 		}
-		
+		// Final validation
+		if (options.interactive && options.recordFile.isPresent()) {
+			throw new IllegalArgumentException("-interactive cannot be used with -record");
+		}
 		//final StreamGenerator streamGenerator = StreamGeneratorFactory(options.source).create();
 	}
 
@@ -226,6 +253,8 @@ public class Main {
 		LOGGER.info("                        or records.");
 		LOGGER.info("-record <filename>    - Records the Morse to a .wav file. Can't be used with");
 		LOGGER.info("                        -interactive mode. If not given, just plays to speakers.");
+		LOGGER.info("-length <1..9|random> - Fixed or random length of sent character groups.");
+		LOGGER.info("                        Default is random (up to 9) if not given.");
 		LOGGER.info("");
 		LOGGER.info("Source:");
 		LOGGER.info("-source [all|letters|numbers|punctuation|prosigns|callsigns|qso|set|");

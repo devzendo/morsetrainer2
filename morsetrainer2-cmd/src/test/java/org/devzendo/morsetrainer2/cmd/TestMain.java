@@ -2,7 +2,7 @@ package org.devzendo.morsetrainer2.cmd;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -277,6 +277,54 @@ public class TestMain {
 		constructWithFailure("-record <file> must be followed by a file name", "-record");
 	}
 	
+	@Test
+	public void randomLength() throws Exception {
+		final Options options = construct("-length", "random").getOptions();
+		assertThat(options.length.isPresent(), equalTo(false));
+	}
+	
+	@Test
+	public void randomLengthByDefault() throws Exception {
+		final Options options = construct().getOptions();
+		assertThat(options.length.isPresent(), equalTo(false));
+	}
+
+	@Test
+	public void zeroIsInvalidLength() throws Exception {
+		constructWithFailure("-length <1..9|random> must be followed by an number in the range 1 to 9, or 'random'", "-length", "0");
+	}
+
+	@Test
+	public void tenIsInvalidLength() throws Exception {
+		constructWithFailure("-length <1..9|random> must be followed by an number in the range 1 to 9, or 'random'", "-length", "10");
+	}
+
+	@Test
+	public void nonIntegerIsInvalid() throws Exception {
+		constructWithFailure("-length <1..9|random> must be followed by an number in the range 1 to 9, or 'random'", "-length", "nobody expects the Spanish inquisition");
+	}
+
+	@Test
+	public void emptyLength() throws Exception {
+		constructWithFailure("-length <1..9|random> must be followed by an number in the range 1 to 9, or 'random'", "-length");
+	}
+
+	@Test
+	public void validLengths() throws Exception {
+		for (int i=1; i<10; i++) {
+			final Options options = construct("-length", "" + i).getOptions();
+			assertThat(options.length.isPresent(), equalTo(true));
+			assertThat(options.length.get(), equalTo(new Integer(i)));
+		}
+	}
+	
+	@Test
+	public void interactiveAndRecordNotAllowed() throws Exception {
+		constructWithFailure("-interactive cannot be used with -record", "-interactive", "-record", "target/nonexistent.wav");
+		constructWithFailure("-interactive cannot be used with -record", "-record", "target/nonexistent.wav", "-interactive");
+	}
+	
+
 	private void constructWithFailure(final String message, final String ... args) {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage(message);
