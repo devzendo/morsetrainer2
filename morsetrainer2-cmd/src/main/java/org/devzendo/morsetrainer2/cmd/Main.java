@@ -67,7 +67,6 @@ public class Main {
 				break;
 			case "-source":
 				options.source = nextSourceArg();
-				System.out.println("source is " + options.source);
 				switch (options.source) {
 				case All:
 				case Letters:
@@ -156,7 +155,6 @@ public class Main {
 		if (options.interactive && options.recordFile.isPresent()) {
 			throw new IllegalArgumentException("-interactive cannot be used with -record");
 		}
-		//final StreamGenerator streamGenerator = StreamGeneratorFactory(options.source).create();
 	}
 
 	public Options getOptions() {
@@ -294,7 +292,10 @@ public class Main {
 		final List<String> finalArgList = logging.setupLoggingFromArgs(Arrays.asList(args));
 		final Properties properties = getPropertiesResource();
 		try {
-			new Main(finalArgList, properties);
+			final Main main = new Main(finalArgList, properties);
+			final Options options = main.getOptions();
+			//final PartyMorseCharacterIterator it = PartyTaggedMorseCharacterIteratorFactory(options.source, options.sourceString).create();
+
 		} catch (final Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			System.exit(1);
