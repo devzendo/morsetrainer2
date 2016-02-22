@@ -20,7 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class TestMain {
+public class TestCommandLineParser {
 	private static Properties properties = Main.getPropertiesResource();
 	
 	@BeforeClass
@@ -345,7 +345,7 @@ public class TestMain {
         construct(args);
 	}
 
-	private Main construct(final String ... args) {
-		return new Main(Arrays.asList(args), properties);
+	private CommandLineParser construct(final String ... args) {
+		return new CommandLineParser(Arrays.asList(args), properties);
 	}
 }
