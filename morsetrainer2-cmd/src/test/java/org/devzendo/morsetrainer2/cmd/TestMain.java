@@ -14,6 +14,7 @@ import java.util.Properties;
 
 import org.devzendo.morsetrainer2.logging.LoggingUnittest;
 import org.devzendo.morsetrainer2.source.Source;
+import org.devzendo.morsetrainer2.source.Source.SourceType;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -192,7 +193,7 @@ public class TestMain {
 
 	@Test
 	public void emptyFileSource() throws Exception {
-		constructWithFailure("-source <file> must be followed by a file name", "-source", "file");
+		constructWithFailure("-source file must be followed by a file name", "-source", "file");
 	}
 
 	@Test
@@ -243,7 +244,7 @@ public class TestMain {
 
 	@Test
 	public void emptySetSource() throws Exception {
-		constructWithFailure("-source <set> must be followed by a string of source characters", "-source", "set");
+		constructWithFailure("-source set must be followed by a string of source characters", "-source", "set");
 	}
 
 	@Test
@@ -324,7 +325,19 @@ public class TestMain {
 		constructWithFailure("-interactive cannot be used with -record", "-interactive", "-record", "target/nonexistent.wav");
 		constructWithFailure("-interactive cannot be used with -record", "-record", "target/nonexistent.wav", "-interactive");
 	}
-	
+
+	@Test
+	public void emptyText() throws Exception {
+		constructWithFailure("-source text <some text> must be followed by a string to play", "-source", "text");
+	}
+
+	@Test
+	public void textSource() throws Exception {
+		final Options options = construct("-source", "text", "1 hoopy $ frood <kn>").getOptions();
+		assertThat(options.source, equalTo(SourceType.Text));
+		assertThat(options.sourceString, equalTo("1 HOOPY  FROOD <KN>"));
+	}
+
 
 	private void constructWithFailure(final String message, final String ... args) {
 		thrown.expect(IllegalArgumentException.class);

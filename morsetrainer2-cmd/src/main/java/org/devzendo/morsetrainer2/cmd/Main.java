@@ -17,6 +17,8 @@ import org.devzendo.commoncode.resource.ResourceLoader;
 import org.devzendo.morsetrainer2.qso.CallsignGenerator;
 import org.devzendo.morsetrainer2.qso.QSOGenerator;
 import org.devzendo.morsetrainer2.source.Source;
+import org.devzendo.morsetrainer2.symbol.PartyMorseCharacterIterator;
+import org.devzendo.morsetrainer2.symbol.PartyMorseCharacterIteratorFactory;
 import org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +43,6 @@ public class Main {
 
 	public Main(final List<String> finalArgList, final Properties properties) {
 		this.finalArgList = finalArgList;
-		final CallsignGenerator callsignGenerator = new CallsignGenerator();
-		final QSOGenerator qsoGenerator = new QSOGenerator(callsignGenerator);
 
 		while (hasNextArg()) {
 			final String arg = nextArg();
@@ -75,29 +75,36 @@ public class Main {
 				case Punctuation:
 					options.sourceString = options.source.content();
 					break;
-				case QSO:
-					options.sourceString = qsoGenerator.generate();
-					break;
-				case Callsigns:
-					options.sourceString = callsignGenerator.generate();
-					break;
 				case Set:
 					if (hasNextArg()) {
 						final String setString = nextArg();
 						options.sourceString = TextToMorseCharacterParser.parseToString(setString);
 					} else {
-						throw new IllegalArgumentException("-source <set> must be followed by a string of source characters");
+						throw new IllegalArgumentException("-source set must be followed by a string of source characters");
 					}
 					break;
 				case File:
 					if (hasNextArg()) {
 						options.sourceString = TextToMorseCharacterParser.parseToString(readFile(new File(nextArg())));
 					} else {
-						throw new IllegalArgumentException("-source <file> must be followed by a file name");
+						throw new IllegalArgumentException("-source file must be followed by a file name");
 					}
 					break;
 				case Stdin:
 					options.sourceString = TextToMorseCharacterParser.parseToString(readStdin());
+					break;
+				case Text:
+					if (hasNextArg()) {
+						final String textString = nextArg();
+						options.sourceString = TextToMorseCharacterParser.parseToString(textString);
+					} else {
+						throw new IllegalArgumentException("-source text <some text> must be followed by a string to play");
+					}
+					break;
+				// No source string is set for these....
+				case QSO:
+				case Callsigns:
+					options.sourceString = "";
 					break;
 				}
 				break;
@@ -254,18 +261,21 @@ public class Main {
 		LOGGER.info("-length <1..9|random> - Fixed or random length of sent character groups.");
 		LOGGER.info("                        Default is random (up to 9) if not given.");
 		LOGGER.info("");
-		LOGGER.info("Source:");
-		LOGGER.info("-source [all|letters|numbers|punctuation|prosigns|callsigns|qso|set|");
-		LOGGER.info("         stdin|-|file]");
+		LOGGER.info("Source (set of characters to randomise, and train with):");
+		LOGGER.info("-source [all|letters|numbers|punctuation|prosigns|set]");
 		LOGGER.info("-source set '....'");
 		LOGGER.info("                      - Use letters, numbers etc. as the characters");
 		LOGGER.info("                        to send, or with set '...', use the specific");
 		LOGGER.info("                        characters specified.");
 		LOGGER.info("                        Default is 'all' if not given.");
+		LOGGER.info("Source (text to play/generate):");
+		LOGGER.info("-source [stdin|-|file|callsigns|qso|text]");
 		LOGGER.info("-source stdin   or  -source -");
-		LOGGER.info("                      - Read the set of characters from standard input.");
+		LOGGER.info("                      - Play the text from standard input.");
 		LOGGER.info("-source file <filename>");
-		LOGGER.info("                      - Read the set of characters from a file.");
+		LOGGER.info("                      - Play the text read from a file.");
+		LOGGER.info("-source text <some text>");
+		LOGGER.info("                      - Play the text in the next argument (beware quoting).");
 		LOGGER.info("");
 		LOGGER.info("-? or -help or -usage - Show this usage summary");
 		LOGGER.info("");
@@ -294,11 +304,14 @@ public class Main {
 		try {
 			final Main main = new Main(finalArgList, properties);
 			final Options options = main.getOptions();
-			//final PartyMorseCharacterIterator it = PartyTaggedMorseCharacterIteratorFactory(options.source, options.sourceString).create();
+			final CallsignGenerator callsignGenerator = new CallsignGenerator();
+			final QSOGenerator qsoGenerator = new QSOGenerator(callsignGenerator);
+			final PartyMorseCharacterIterator it = new PartyMorseCharacterIteratorFactory(options.source, options.sourceString, callsignGenerator, qsoGenerator).create();
 
 		} catch (final Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			System.exit(1);
 		}
 	}
+
 }

@@ -14,7 +14,8 @@ public class Source {
 		QSO(""),
 		Set(""),
 		File(""),
-		Stdin("");
+		Stdin(""),
+		Text("");
 	
 		private final String content;
 		private SourceType(final String content) {
