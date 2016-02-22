@@ -25,10 +25,10 @@ public class CommandLineParser {
 
 	public CommandLineParser(final List<String> finalArgList, final Properties properties) {
 		this.finalArgList = finalArgList;
-	
+
 		while (hasNextArg()) {
 			final String arg = nextArg();
-	
+
 			switch (arg) {
 			case "-version":
 				showVersion(properties);
@@ -62,7 +62,8 @@ public class CommandLineParser {
 						final String setString = nextArg();
 						options.sourceString = TextToMorseCharacterParser.parseToString(setString);
 					} else {
-						throw new IllegalArgumentException("-source set must be followed by a string of source characters");
+						throw new IllegalArgumentException(
+								"-source set must be followed by a string of source characters");
 					}
 					break;
 				case File:
@@ -80,7 +81,8 @@ public class CommandLineParser {
 						final String textString = nextArg();
 						options.sourceString = TextToMorseCharacterParser.parseToString(textString);
 					} else {
-						throw new IllegalArgumentException("-source text <some text> must be followed by a string to play");
+						throw new IllegalArgumentException(
+								"-source text <some text> must be followed by a string to play");
 					}
 					break;
 				// No source string is set for these....
@@ -97,7 +99,8 @@ public class CommandLineParser {
 				if (hasNextArg()) {
 					final File recordingFile = new File(nextArg());
 					if (recordingFile.exists()) {
-						throw new IllegalArgumentException("Cannot overwrite existing recording '" + recordingFile.getAbsolutePath() + "'");
+						throw new IllegalArgumentException(
+								"Cannot overwrite existing recording '" + recordingFile.getAbsolutePath() + "'");
 					}
 					options.recordFile = Optional.of(recordingFile);
 				} else {
@@ -124,10 +127,12 @@ public class CommandLineParser {
 					}
 				}
 				if (badArg) {
-					throw new IllegalArgumentException("-length <1..9|random> must be followed by an number in the range 1 to 9, or 'random'");
+					throw new IllegalArgumentException(
+							"-length <1..9|random> must be followed by an number in the range 1 to 9, or 'random'");
 				}
 				break;
-				
+			default:
+				throw new IllegalArgumentException("Unknown option '" + arg + "'");
 			}
 		}
 		// Fill in defaults
@@ -278,5 +283,4 @@ public class CommandLineParser {
 		LOGGER.info("-threads              - Show thread names in each log line output.");
 		LOGGER.info("-times                - Show timing data in each log line output.");
 	}
-
 }

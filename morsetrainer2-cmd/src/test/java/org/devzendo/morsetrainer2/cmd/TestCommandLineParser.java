@@ -338,7 +338,11 @@ public class TestCommandLineParser {
 		assertThat(options.sourceString, equalTo("1 HOOPY  FROOD <KN>"));
 	}
 
-
+	@Test
+	public void unknownArg() throws Exception {
+		constructWithFailure("Unknown option '-fish'", "-fish");
+	}
+	
 	private void constructWithFailure(final String message, final String ... args) {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage(message);
