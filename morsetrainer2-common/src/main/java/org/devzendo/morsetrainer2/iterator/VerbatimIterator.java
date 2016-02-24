@@ -1,23 +1,26 @@
 package org.devzendo.morsetrainer2.iterator;
 
+import java.util.Iterator;
+
+import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
+import org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser;
 
 public class VerbatimIterator implements PartyMorseCharacterIterator {
 
+	private final Iterator<MorseCharacter> iterator;
+
 	public VerbatimIterator(final String playString) {
-		// TODO Auto-generated constructor stub
+		iterator = TextToMorseCharacterParser.parseToList(playString).iterator();
 	}
 
 	@Override
 	public boolean hasNext() {
-		// TODO Auto-generated method stub
-		return false;
+		return iterator.hasNext();
 	}
 
 	@Override
 	public PartyMorseCharacter next() {
-		// TODO Auto-generated method stub
-		return null;
+		return new PartyMorseCharacter(0, iterator.next()); // party 0 for now
 	}
-
 }
