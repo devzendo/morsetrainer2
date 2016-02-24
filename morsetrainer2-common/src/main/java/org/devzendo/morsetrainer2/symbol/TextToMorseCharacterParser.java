@@ -75,6 +75,34 @@ public class TextToMorseCharacterParser implements Iterator<MorseCharacter> {
 	 * of MorseCharacters. Unknown characters are omitted; multiple spaces are
 	 * preserved; other white space ignored.
 	 * 
+	 * Returns a list that's fast for iterating over. An ArrayList, if you need
+	 * to know. In a test, this benchmarked at 10s to iterate over with many items;
+	 * a LinkedList benchmarked at 37s.
+	 * 
+	 * @param string
+	 *            any ASCII text.
+	 * @return possibly empty List, never null.
+	 */
+	public static List<MorseCharacter> parseToList(String string) {
+		LOGGER.debug("Parsing '" + string + "'");
+		final List<MorseCharacter> out = new ArrayList<>();
+
+		if (string != null && string.length() != 0) {
+			final TextToMorseCharacterParser parser = new TextToMorseCharacterParser();
+			parser.addString(string);
+			while (parser.hasNext()) {
+				out.add(parser.next());
+			}
+		}
+
+		return out;
+	}
+
+	/**
+	 * Parse any ASCII text, possibly containing <PR> style prosigns to an array
+	 * of MorseCharacters. Unknown characters are omitted; multiple spaces are
+	 * preserved; other white space ignored.
+	 * 
 	 * Builds up an internal list, then converts to a String - may not be the
 	 * best use of memory!
 	 * 

@@ -2,8 +2,12 @@ package org.devzendo.morsetrainer2.symbol;
 
 import static org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser.parse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+
+import java.util.List;
 
 import org.devzendo.morsetrainer2.logging.LoggingUnittest;
 import org.hamcrest.Matchers;
@@ -52,9 +56,17 @@ public class TestTextToMorseCharacterParser {
 	@Test
 	public void parseToSetAsArray() {
 		final MorseCharacter[] uniqueArray = TextToMorseCharacterParser.parseToSetAsArray("a=a3bc<kn>3<cl>.$");
-		assertThat(uniqueArray, Matchers.arrayWithSize(8));
-		assertThat(uniqueArray, Matchers.arrayContainingInAnyOrder(MorseCharacter.A, MorseCharacter.EQUAL, MorseCharacter.D3,
+		assertThat(uniqueArray, arrayWithSize(8));
+		assertThat(uniqueArray, arrayContainingInAnyOrder(MorseCharacter.A, MorseCharacter.EQUAL, MorseCharacter.D3,
 				MorseCharacter.B, MorseCharacter.C, MorseCharacter.KN, MorseCharacter.CL, MorseCharacter.FULLSTOP));
+	}
+
+	@Test
+	public void parseTolist() {
+		final List<MorseCharacter> list = TextToMorseCharacterParser.parseToList("a=a3bc<kn>3<cl>.$");
+		assertThat(list, hasSize(10));
+		assertThat(list, Matchers.contains(MorseCharacter.A, MorseCharacter.EQUAL, MorseCharacter.A, MorseCharacter.D3,
+				MorseCharacter.B, MorseCharacter.C, MorseCharacter.KN, MorseCharacter.D3,MorseCharacter.CL, MorseCharacter.FULLSTOP));
 	}
 
 	@Test
