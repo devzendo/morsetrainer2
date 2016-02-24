@@ -6,10 +6,10 @@ import java.util.Properties;
 
 import org.devzendo.commoncode.logging.Logging;
 import org.devzendo.commoncode.resource.ResourceLoader;
+import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIterator;
+import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIteratorFactory;
 import org.devzendo.morsetrainer2.qso.CallsignGenerator;
 import org.devzendo.morsetrainer2.qso.QSOGenerator;
-import org.devzendo.morsetrainer2.symbol.PartyMorseCharacterIterator;
-import org.devzendo.morsetrainer2.symbol.PartyMorseCharacterIteratorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ public class Main {
 			final Options options = parser.getOptions();
 			final CallsignGenerator callsignGenerator = new CallsignGenerator();
 			final QSOGenerator qsoGenerator = new QSOGenerator(callsignGenerator);
-			final PartyMorseCharacterIterator it = new PartyMorseCharacterIteratorFactory(options.source, options.sourceString, callsignGenerator, qsoGenerator).create();
+			final PartyMorseCharacterIterator it = new PartyMorseCharacterIteratorFactory(options.length, options.source, options.sourceString, callsignGenerator, qsoGenerator).create();
 
 		} catch (final Exception e) {
 			LOGGER.error(e.getMessage(), e);
