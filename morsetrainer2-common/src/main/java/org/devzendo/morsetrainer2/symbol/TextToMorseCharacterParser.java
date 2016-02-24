@@ -1,10 +1,12 @@
 package org.devzendo.morsetrainer2.symbol;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,34 @@ public class TextToMorseCharacterParser implements Iterator<MorseCharacter> {
 		}
 
 		return list.toArray(new MorseCharacter[0]);
+	}
+
+	/**
+	 * Parse any ASCII text, possibly containing <PR> style prosigns to an array
+	 * of MorseCharacters. Unknown characters are omitted; multiple spaces are
+	 * preserved; other white space ignored; duplicates are removed (thus forming
+	 * a set); order is not preserved.
+	 * 
+	 * Builds up an internal set, then converts to an array - may not be the
+	 * best use of memory, but ensures random access is possible!
+	 * 
+	 * @param string
+	 *            any ASCII text.
+	 * @return possibly empty array, never null.
+	 */
+	public static MorseCharacter[] parseToSetAsArray(final String string) {
+		LOGGER.debug("Parsing '" + string + "'");
+		final Set<MorseCharacter> set = new HashSet<>();
+
+		if (string != null && string.length() != 0) {
+			final TextToMorseCharacterParser parser = new TextToMorseCharacterParser();
+			parser.addString(string);
+			while (parser.hasNext()) {
+				set.add(parser.next());
+			}
+		}
+
+		return set.toArray(new MorseCharacter[0]);
 	}
 
 	/**

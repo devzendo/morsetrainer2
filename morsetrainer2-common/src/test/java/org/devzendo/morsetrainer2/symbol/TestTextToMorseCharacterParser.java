@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.equalTo;
 
 import org.devzendo.morsetrainer2.logging.LoggingUnittest;
+import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -46,6 +47,14 @@ public class TestTextToMorseCharacterParser {
 	@Test
 	public void parseToString() {
 		assertThat(TextToMorseCharacterParser.parseToString("a=<kn>3<cl>."), equalTo("A=<KN>3<CL>."));
+	}
+
+	@Test
+	public void parseToSetAsArray() {
+		final MorseCharacter[] uniqueArray = TextToMorseCharacterParser.parseToSetAsArray("a=a3bc<kn>3<cl>.$");
+		assertThat(uniqueArray, Matchers.arrayWithSize(8));
+		assertThat(uniqueArray, Matchers.arrayContainingInAnyOrder(MorseCharacter.A, MorseCharacter.EQUAL, MorseCharacter.D3,
+				MorseCharacter.B, MorseCharacter.C, MorseCharacter.KN, MorseCharacter.CL, MorseCharacter.FULLSTOP));
 	}
 
 	@Test
