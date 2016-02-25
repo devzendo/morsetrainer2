@@ -96,7 +96,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
-			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
