@@ -43,6 +43,42 @@ public class TestWordIterator {
 	}
 
 	@Test
+	public void multipleSpaceStartingWord() {
+		final WordIterator wit = new WordIterator(new VerbatimIterator("     123"));
+		assertThat(wit.hasNext(), equalTo(true));
+		assertThat(wit.next(), equalTo(toPMCArray("123")));
+		assertThat(wit.hasNext(), equalTo(false));
+	}
+
+	@Test
+	public void multipleSpaceEndingWord() {
+		final WordIterator wit = new WordIterator(new VerbatimIterator("123   "));
+		assertThat(wit.hasNext(), equalTo(true));
+		assertThat(wit.next(), equalTo(toPMCArray("123")));
+		assertThat(wit.hasNext(), equalTo(false));
+	}
+
+	@Test
+	public void twoSpaceBetweenWords() {
+		final WordIterator wit = new WordIterator(new VerbatimIterator("123  456"));
+		assertThat(wit.hasNext(), equalTo(true));
+		assertThat(wit.next(), equalTo(toPMCArray("123")));
+		assertThat(wit.hasNext(), equalTo(true));
+		assertThat(wit.next(), equalTo(toPMCArray("456")));
+		assertThat(wit.hasNext(), equalTo(false));
+	}
+
+	@Test
+	public void manySpacesBetweenWords() {
+		final WordIterator wit = new WordIterator(new VerbatimIterator("123     456"));
+		assertThat(wit.hasNext(), equalTo(true));
+		assertThat(wit.next(), equalTo(toPMCArray("123")));
+		assertThat(wit.hasNext(), equalTo(true));
+		assertThat(wit.next(), equalTo(toPMCArray("456")));
+		assertThat(wit.hasNext(), equalTo(false));
+	}
+
+	@Test
 	public void testNormalCase() {
 		final WordIterator wit = new WordIterator(new VerbatimIterator("123 456 789"));
 		assertThat(wit.hasNext(), equalTo(true));
