@@ -23,6 +23,20 @@ public class TestVerbatimIterator {
 		assertThat(extractToString(new VerbatimIterator(" Abc 3  $ <Kn><zq> D.")), equalTo(" ABC 3   <KN> D."));
 	}
 
+	@Test
+	public void spacesThenLineEndingsCoalescedToSingleSpace() {
+		assertThat(extractToString(new VerbatimIterator("a\nb")), equalTo("A B"));
+		assertThat(extractToString(new VerbatimIterator(" a\n ")), equalTo(" A"));
+		assertThat(extractToString(new VerbatimIterator(" a\np")), equalTo(" A P"));
+		assertThat(extractToString(new VerbatimIterator(" a\n p")), equalTo(" A  P"));
+		assertThat(extractToString(new VerbatimIterator(" a \n p")), equalTo(" A  P"));
+		assertThat(extractToString(new VerbatimIterator(" a  \n p")), equalTo(" A  P"));
+		assertThat(extractToString(new VerbatimIterator(" a   \n p")), equalTo(" A  P"));
+		assertThat(extractToString(new VerbatimIterator(" a   \nz")), equalTo(" A Z"));
+		assertThat(extractToString(new VerbatimIterator(" a   \nz  a   \np")), equalTo(" A Z  A P"));
+		assertThat(extractToString(new VerbatimIterator("a\n")), equalTo("A"));
+	}
+
 	private String extractToString(final VerbatimIterator verbatimIterator) {
 		final StringBuilder sb = new StringBuilder();
 		while (verbatimIterator.hasNext()) {
