@@ -13,16 +13,16 @@ import org.slf4j.LoggerFactory;
 
 public class TextToMorseCharacterParser implements Iterator<MorseCharacter> {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(TestTextToMorseCharacterParser.class);
-	
+	private static Logger LOGGER = LoggerFactory.getLogger(TextToMorseCharacterParser.class);
+
 	/**
 	 * Parse any ASCII text, possibly containing <PR> style prosigns to an array
 	 * of MorseCharacters. Unknown characters are omitted; multiple spaces are
 	 * preserved; other white space ignored.
-	 * 
+	 *
 	 * Builds up an internal list, then converts to an array - may not be the
 	 * best use of memory!
-	 * 
+	 *
 	 * @param string
 	 *            any ASCII text.
 	 * @return possibly empty array, never null.
@@ -47,10 +47,10 @@ public class TextToMorseCharacterParser implements Iterator<MorseCharacter> {
 	 * of MorseCharacters. Unknown characters are omitted; multiple spaces are
 	 * preserved; other white space ignored; duplicates are removed (thus forming
 	 * a set); order is not preserved.
-	 * 
+	 *
 	 * Builds up an internal set, then converts to an array - may not be the
 	 * best use of memory, but ensures random access is possible!
-	 * 
+	 *
 	 * @param string
 	 *            any ASCII text.
 	 * @return possibly empty array, never null.
@@ -74,16 +74,16 @@ public class TextToMorseCharacterParser implements Iterator<MorseCharacter> {
 	 * Parse any ASCII text, possibly containing <PR> style prosigns to an array
 	 * of MorseCharacters. Unknown characters are omitted; multiple spaces are
 	 * preserved; other white space ignored.
-	 * 
+	 *
 	 * Returns a list that's fast for iterating over. An ArrayList, if you need
 	 * to know. In a test, this benchmarked at 10s to iterate over with many items;
 	 * a LinkedList benchmarked at 37s.
-	 * 
+	 *
 	 * @param string
 	 *            any ASCII text.
 	 * @return possibly empty List, never null.
 	 */
-	public static List<MorseCharacter> parseToList(String string) {
+	public static List<MorseCharacter> parseToList(final String string) {
 		LOGGER.debug("Parsing '" + string + "'");
 		final List<MorseCharacter> out = new ArrayList<>();
 
@@ -102,15 +102,15 @@ public class TextToMorseCharacterParser implements Iterator<MorseCharacter> {
 	 * Parse any ASCII text, possibly containing <PR> style prosigns to an array
 	 * of MorseCharacters. Unknown characters are omitted; multiple spaces are
 	 * preserved; other white space ignored.
-	 * 
+	 *
 	 * Builds up an internal list, then converts to a String - may not be the
 	 * best use of memory!
-	 * 
+	 *
 	 * @param string
 	 *            any ASCII text.
 	 * @return possibly empty String, never null.
 	 */
-	public static String parseToString(String string) {
+	public static String parseToString(final String string) {
 		LOGGER.debug("Parsing '" + string + "'");
 		final StringBuilder sb = new StringBuilder();;
 
@@ -130,11 +130,11 @@ public class TextToMorseCharacterParser implements Iterator<MorseCharacter> {
 	private MorseCharacter store = null;
 	private boolean inProsignScan = false;
 	private StringBuilder prosignBuffer = new StringBuilder();
-	
+
 	public void addString(final String anyString) {
 		LOGGER.debug("Adding input string '" + anyString + "'");
 		if (anyString != null && anyString.length() != 0) {
-			for (char c : anyString.toUpperCase().toCharArray()) {
+			for (final char c : anyString.toUpperCase().toCharArray()) {
 				LOGGER.debug("Adding input character '" + c + "'");
 				inputText.add(new Character(c));
 			}
@@ -162,7 +162,7 @@ public class TextToMorseCharacterParser implements Iterator<MorseCharacter> {
 					return true;
 				}
 				LOGGER.debug("Discarding bad prosign '" + prosignText + "'");
-				// Not a valid prosign, continue scan 
+				// Not a valid prosign, continue scan
 			} else {
 				// Could be a prosign, continue scan
 				LOGGER.debug("Adding '" + top + "' to prosign buffer");
