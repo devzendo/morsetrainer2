@@ -29,7 +29,7 @@ public class SpeakerPlayer implements Player {
 
 	@Override
 	public void play(final String anyString) {
-		// TODO the party is not here, can't play by the correct clipPlayer
+		// TODO the party is not here, can't generate clips by the correct clipGen
 		final List<MorseCharacter> morseChars = TextToMorseCharacterParser.parseToList(anyString);
 		playMorseCharacters(morseChars);
 	}
