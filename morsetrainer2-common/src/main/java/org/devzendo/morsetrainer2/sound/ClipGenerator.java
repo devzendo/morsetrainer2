@@ -1,5 +1,8 @@
 package org.devzendo.morsetrainer2.sound;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -14,8 +17,8 @@ public class ClipGenerator {
 	private static int SAMPLE_RATE = 8000;
 	private static Double TWO_PI = Math.PI * 2.0;
 	private static Logger LOGGER = LoggerFactory.getLogger(ClipGenerator.class);
-    private static final AudioFormat FORMAT = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 
-            (float) SAMPLE_RATE, 8, 1, FRAME_SIZE, SAMPLE_RATE, false);
+    private static final AudioFormat FORMAT = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
+            SAMPLE_RATE, 8, 1, FRAME_SIZE, SAMPLE_RATE, false);
 
 	private double ditDurationSeconds = 0.0;
 	private Clip ditClip = null;
@@ -37,6 +40,9 @@ public class ClipGenerator {
 	private byte[] elementSpace;
 	private byte[] characterSpace;
 	private byte[] wordSpace;
+
+	private final List<Pulse> waveformPulses = new ArrayList<>();
+	private int waveformPulseLength = 0;
 
 	public ClipGenerator(final int wpm, final int fwpm, final int freqHz) {
 		this.wpm = wpm;
@@ -97,9 +103,67 @@ public class ClipGenerator {
 		}
 	}
 
+	public void clearWaveform() {
+		waveformPulses.clear();
+		waveformPulseLength = 0;
+	}
+
+	public void addToWaveform(final Pulse pulse) {
+		waveformPulses.add(pulse);
+		switch (pulse) {
+		case dit:
+			waveformPulseLength += dit.length;
+			break;
+		case dah:
+			waveformPulseLength += dah.length;
+			break;
+		case ch:
+			waveformPulseLength += characterSpace.length;
+			break;
+		case el:
+			waveformPulseLength += elementSpace.length;
+			break;
+		default: // sealed case classes FTW!
+		case wo:
+			waveformPulseLength += wordSpace.length;
+			break;
+		}
+	}
+
+	public Clip getWaveform() {
+		final byte[] samples = new byte[waveformPulseLength];
+		int index = 0;
+		for (final Pulse pulse : waveformPulses) {
+			switch (pulse) {
+			case dit:
+				System.arraycopy(dit, 0, samples, index, dit.length);
+				index += dit.length;
+				break;
+			case dah:
+				System.arraycopy(dah, 0, samples, index, dah.length);
+				index += dah.length;
+				break;
+			case ch:
+				System.arraycopy(characterSpace, 0, samples, index, characterSpace.length);
+				index += characterSpace.length;
+				break;
+			case el:
+				System.arraycopy(elementSpace, 0, samples, index, elementSpace.length);
+				index += elementSpace.length;
+				break;
+			default: // sealed case classes FTW!
+			case wo:
+				System.arraycopy(wordSpace, 0, samples, index, wordSpace.length);
+				index += wordSpace.length;
+				break;
+			}
+		}
+		return samplesToClip(samples);
+	}
+
 	private Clip samplesToClip(final byte[] out) {
 		try {
-			Clip clip = AudioSystem.getClip();
+			final Clip clip = AudioSystem.getClip();
 			clip.open(FORMAT, out, 0, out.length);
 			clip.setFramePosition(0);
 			return clip;
@@ -115,12 +179,11 @@ public class ClipGenerator {
 		ditDurationSeconds = wpmToSeconds(wpm);
 		ditMs = (long) (ditDurationSeconds * 1000.0);
 		dit = createPulse(ditDurationSeconds);
-		ditClip = samplesToClip(dit); 
+		ditClip = samplesToClip(dit);
 		dah = createPulse(ditDurationSeconds * 3.0);
 		dahClip = samplesToClip(dah);
 		dahMs = ditMs * 3;
-		final double fudge = 1.0;   // sounds better to me with a fudge of 0.3 - shorter gap between elements.
-		elementSpace = createSilence(ditDurationSeconds * fudge);
+		elementSpace = createSilence(ditDurationSeconds);
 		elementSpaceClip = samplesToClip(elementSpace);
 		elementSpaceMs = ditMs;
 		LOGGER.debug("ditMs: " + ditMs + " dahMs: " + dahMs + " elSp: " + elementSpaceMs);
@@ -158,19 +221,19 @@ public class ClipGenerator {
 		final double rampDurationSeconds = ditDurationSeconds / 8.0;
 		// should probably be based on the sample rate? 8 sounds good at 20WPM.
 		final int rampSamples = (int) (ClipGenerator.SAMPLE_RATE * rampDurationSeconds);
-		final float dRampSamples = (float) rampSamples;
+		final float dRampSamples = rampSamples;
 		for (int i = 0; i < rampSamples; i++) {
 			out[i] *= (i / dRampSamples);
 		}
 		for (int i = (rampSamples - 1); i >= 0; i--) {
-			int idx = samples - i - 1;
+			final int idx = samples - i - 1;
 			out[idx] *= (i / dRampSamples);
 		}
 	}
 
 	private byte[] createSine(final int samples, final int freqHz) {
 		final int cycleLength = ClipGenerator.SAMPLE_RATE / freqHz;
-		final double dCycleLength = (double) cycleLength;
+		final double dCycleLength = cycleLength;
 
 		final byte[] out = new byte[samples];
 		for (int i = 0; i < samples; i++) {
