@@ -20,8 +20,8 @@ public class CommandLineParser {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommandLineParser.class);
 	private int cmdIndex = 0;
-	private List<String> finalArgList;
-	private Options options = new Options();
+	private final List<String> finalArgList;
+	private final Options options = new Options();
 
 	public CommandLineParser(final List<String> finalArgList, final Properties properties) {
 		this.finalArgList = finalArgList;
@@ -132,6 +132,7 @@ public class CommandLineParser {
 				}
 				break;
 			default:
+				usage();
 				throw new IllegalArgumentException("Unknown option '" + arg + "'");
 			}
 		}
@@ -167,7 +168,7 @@ public class CommandLineParser {
 		return finalArgList.get(cmdIndex++);
 	}
 
-	private Integer nextNumArg(int low, int high, String name) {
+	private Integer nextNumArg(final int low, final int high, final String name) {
 		if (hasNextArg()) {
 			final String nextArg = nextArg();
 			try {
@@ -177,7 +178,7 @@ public class CommandLineParser {
 				} else {
 					return out;
 				}
-			} catch (NumberFormatException nfe) {
+			} catch (final NumberFormatException nfe) {
 				LOGGER.error("The " + name + " '" + nextArg + "' is not an integer");
 			}
 		}
