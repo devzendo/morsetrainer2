@@ -47,11 +47,11 @@ public class SpeakerPlayer implements Player {
 	private void playMorseCharacters(final List<MorseCharacter> morseChars) {
 		try {
 			// TODO take party into account...
-			final List<Pulse> pulses = morseCharactersToPulses
-					.translate(morseChars);
-			for (final Pulse pulse : pulses) {
-				clipPlayer.playSynchronously(clipGen.translate(pulse));
+			clipGen.clearWaveform();
+			for (final Pulse pulse : morseCharactersToPulses.translate(morseChars)) {
+				clipGen.addToWaveform(pulse);
 			}
+			clipPlayer.playSynchronously(clipGen.getWaveform());
 		} catch (final InterruptedException e) {
 			LOGGER.warn("Interrupted when playing: " + e.getMessage());
 		}
