@@ -2,7 +2,7 @@ package org.devzendo.morsetrainer2.cmd;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -22,7 +22,7 @@ import org.junit.rules.ExpectedException;
 
 public class TestCommandLineParser {
 	private static Properties properties = Main.getPropertiesResource();
-	
+
 	@BeforeClass
 	public static void setupLogging() {
 		LoggingUnittest.initialise();
@@ -32,7 +32,7 @@ public class TestCommandLineParser {
 	public ExpectedException thrown = ExpectedException.none();
 
 	// WPM
-	
+
 	@Test
 	public void wpmAsLast() {
 		constructWithFailure("-wpm must be in the range 12 to 60", "-wpm");
@@ -54,7 +54,7 @@ public class TestCommandLineParser {
 	}
 
 	// FWPM
-	
+
 	@Test
 	public void fwpmAsLast() {
 		constructWithFailure("-fwpm must be in the range 12 to 60", "-fwpm");
@@ -76,7 +76,7 @@ public class TestCommandLineParser {
 	}
 
 	// FREQ
-	
+
 	@Test
 	public void freqAsLast() {
 		constructWithFailure("-freq must be in the range 400 to 800", "-freq");
@@ -125,9 +125,9 @@ public class TestCommandLineParser {
 		assertThat(options.wpm, equalTo(new Integer("12")));
 		assertThat(options.fwpm, equalTo(new Integer("17")));
 	}
-	
+
 	// Source
-	
+
 	@Test
 	public void defaultSource() throws Exception {
 		final Options options = construct().getOptions();
@@ -188,7 +188,7 @@ public class TestCommandLineParser {
 	public void fileSource() throws Exception {
 		final Options options = construct("-source", "file", "src/test/resources/input.txt").getOptions();
 		assertThat(options.source, equalTo(Source.SourceType.File));
-		assertThat(options.sourceString, equalTo("ABCDE"));
+		assertThat(options.sourceString, equalTo("ABCDE ")); // Note space added at end of line.
 	}
 
 	@Test
@@ -220,13 +220,13 @@ public class TestCommandLineParser {
 
 	private void tryStdinSource(final String sourceName) throws IOException {
 		final InputStream origStdin = System.in;
-		try(final ByteArrayInputStream bais = new ByteArrayInputStream("STDINTXT".getBytes())) {
+		try(final ByteArrayInputStream bais = new ByteArrayInputStream("STDINTXT\r\n INPUT".getBytes())) {
 			System.setIn(bais);
 
 			final Options options = construct("-source", sourceName).getOptions();
 			assertThat(options.source, equalTo(Source.SourceType.Stdin));
-			assertThat(options.sourceString, equalTo("STDINTXT"));
-			
+			assertThat(options.sourceString, equalTo("STDINTXT  INPUT ")); // Note spaces
+
 		} finally {
 			System.setIn(origStdin);
 		}
@@ -278,13 +278,13 @@ public class TestCommandLineParser {
 	public void emptyRecordFile() throws Exception {
 		constructWithFailure("-record <file> must be followed by a file name", "-record");
 	}
-	
+
 	@Test
 	public void randomLength() throws Exception {
 		final Options options = construct("-length", "random").getOptions();
 		assertThat(options.length.isPresent(), equalTo(false));
 	}
-	
+
 	@Test
 	public void randomLengthByDefault() throws Exception {
 		final Options options = construct().getOptions();
@@ -319,7 +319,7 @@ public class TestCommandLineParser {
 			assertThat(options.length.get(), equalTo(new Integer(i)));
 		}
 	}
-	
+
 	@Test
 	public void interactiveAndRecordNotAllowed() throws Exception {
 		constructWithFailure("-interactive cannot be used with -record", "-interactive", "-record", "target/nonexistent.wav");
@@ -342,7 +342,7 @@ public class TestCommandLineParser {
 	public void unknownArg() throws Exception {
 		constructWithFailure("Unknown option '-fish'", "-fish");
 	}
-	
+
 	private void constructWithFailure(final String message, final String ... args) {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage(message);
