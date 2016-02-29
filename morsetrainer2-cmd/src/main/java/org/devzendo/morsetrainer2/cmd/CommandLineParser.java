@@ -213,6 +213,7 @@ public class CommandLineParser {
 			String line;
 			while ((line = br.readLine()) != null) {
 				sb.append(line);
+				sb.append(' '); // newlines are spaces, otherwise words at end of lines may run into each other.
 			}
 			return sb.toString();
 		} catch (final IOException ioe) {
