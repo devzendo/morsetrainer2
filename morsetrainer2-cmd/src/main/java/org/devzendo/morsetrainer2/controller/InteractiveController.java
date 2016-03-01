@@ -1,13 +1,12 @@
 package org.devzendo.morsetrainer2.controller;
 
-import static org.devzendo.morsetrainer2.cmd.AnsiHelper.flush;
 import static org.devzendo.morsetrainer2.cmd.AnsiHelper.print;
 import static org.devzendo.morsetrainer2.cmd.AnsiHelper.println;
 import static org.devzendo.morsetrainer2.cmd.AnsiHelper.printlnraw;
 import static org.devzendo.morsetrainer2.cmd.AnsiHelper.printraw;
 
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.Scanner;
 
 import org.apache.commons.lang3.StringUtils;
 import org.devzendo.commoncode.concurrency.ThreadUtils;
@@ -17,30 +16,49 @@ import org.devzendo.morsetrainer2.player.Player;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 import org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser;
+import org.fusesource.jansi.AnsiRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import jline.console.ConsoleReader;
 
 public class InteractiveController implements Controller {
+	private static final Logger LOGGER = LoggerFactory.getLogger(InteractiveController.class);
+	private static final String PROMPT = AnsiRenderer.render("@|yellow,bold ? |@");
 
 	private final PartyMorseCharacterIterator it;
 	private final Player player;
-	private final Scanner scanner;
+	private final ConsoleReader consoleReader;
 
 	public InteractiveController(final PartyMorseCharacterIterator it, final Player player) {
 		this.it = it;
 		this.player = player;
-		scanner = new Scanner(System.in);
+        try {
+			consoleReader = new ConsoleReader();
+		} catch (final IOException e) {
+			final String msg = "Couldn't start ConsoleReader: " + e.getMessage();
+			LOGGER.error(msg);
+			throw new IllegalStateException(msg);
+		}
 	}
 
 	@Override
 	public void prepare() {
-		// TODO Auto-generated method stub
-
+		println("At the @|yellow,bold ?|@ prompt, enter the string of Morse you heard,");
+		printlnraw("with <..> around any prosigns, then press ENTER.");
+		printlnraw("Just press ENTER without entering anything to play the string again.");
+		printlnraw("");
+		try {
+			consoleReader.readLine(AnsiRenderer.render("@|green FIRST, PRESS ENTER TO HEAR VVV THEN YOU'RE OFF! |@"));
+		} catch (final IllegalArgumentException e) {
+		} catch (final IOException e) {
+		}
 	}
 
 	@Override
 	public void start() {
-		println("At the @|yellow ?|@ prompt, enter the string of Morse you heard,");
-		printlnraw("with <..> around any prosigns, then press ENTER.");
 		final WordIterator wit = new WordIterator(it);
+		// TODO get number of groups, display current/max groups in prompt?
 
 		PartyMorseCharacter[] word = null;
 		while (wit.hasNext()) {
@@ -79,21 +97,6 @@ public class InteractiveController implements Controller {
 		print("@|bold,green ✓ |@");
 	}
 
-	private void normal() {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void red() {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void green() {
-		// TODO Auto-generated method stub
-
-	}
-
 	private boolean wordEqual(final PartyMorseCharacter[] word, final MorseCharacter[] enteredMorseCharacters) {
 		final MorseCharacter[] wordChars = new MorseCharacter[word.length];
 		for (int i = 0; i < word.length; i++) {
@@ -113,9 +116,12 @@ public class InteractiveController implements Controller {
 	}
 
 	private String getInput() {
-		print("@|yellow ? |@");
-		flush();
-		return StringUtils.defaultString(scanner.next(), "").trim();
+		try {
+			return StringUtils.defaultString(consoleReader.readLine(PROMPT), "").trim();
+		} catch (final IOException e) {
+			LOGGER.warn("ConsoleReader failed to read: " + e.getMessage());
+			return "";
+		}
 	}
 
 	@Override
