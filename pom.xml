@@ -52,8 +52,8 @@ non-GUI testing.
 	<modules>
 		<module>morsetrainer2-common</module>
 		<module>morsetrainer2-cmd</module>
-<!--
 		<module>morsetrainer2-cmd-macosx</module>
+<!--
 		<module>morsetrainer2-cmd-macosx-package</module>
 -->
 	</modules>

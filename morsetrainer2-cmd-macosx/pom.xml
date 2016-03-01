@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>morsetrainer2-cmd-macosx</artifactId>
+
+	<parent>
+		<groupId>org.devzendo</groupId>
+		<artifactId>morsetrainer2-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../</relativePath>
+	</parent>
+
+	<properties>
+		<appName>mt2</appName>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>mac os x</id>
+			<activation>
+				<os>
+					<name>mac os x</name>
+				</os>
+			</activation>
+			<build>
+
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<filtering>true</filtering>
+					</resource>
+				</resources>
+
+				<plugins>
+					<plugin>
+						<groupId>org.devzendo</groupId>
+						<artifactId>cross-platform-launcher-plugin</artifactId>
+						<version>1.1.0-SNAPSHOT</version>
+						<configuration>
+							<os>MacOSX</os>
+							<launcherType>Console</launcherType>
+							<applicationName>${appName}</applicationName>
+							<mainClassName>org.devzendo.morsetrainer2.cmd.Main
+							</mainClassName>
+							<!-- I don't have an assigned creator code <bundleSignature>BM</bundleSignature> -->
+						</configuration>
+						<executions>
+							<execution>
+								<id>createlauncher</id>
+								<phase>package</phase>
+								<goals>
+									<goal>createlauncher</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!-- Copy the JAnsi native libraries into the correct location 
+						in the Mac OS X launcher structure created above. -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack-dependencies</id>
+								<phase>package</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.fusesource.jansi</groupId>
+											<artifactId>jansi-native</artifactId>
+											<version>1.5</version>
+											<classifier>osx</classifier>
+											<type>jar</type>
+											<overWrite>true</overWrite>
+											<includes>META-INF/native/osx/*</includes>
+											<!-- note: into tmp/lib - since there's a hierarchy that I use 
+												the antrun plugin (next) to collapse -->
+											<outputDirectory>${project.build.directory}/tmp/lib</outputDirectory>
+										</artifactItem>
+									</artifactItems>
+									<!-- other configurations here -->
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
+						<executions>
+							<execution>
+								<id>move-jansi-dependencies</id>
+								<phase>package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<move
+											file="${project.build.directory}/tmp/lib/META-INF/native/osx/libjansi.jnilib"
+											todir="${project.build.directory}/macosx/lib" />
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.devzendo</groupId>
+			<artifactId>morsetrainer2-cmd</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.fusesource.jansi</groupId>
+			<artifactId>jansi-native</artifactId>
+			<version>1.5</version>
+			<classifier>osx</classifier>
+		</dependency>
+	</dependencies>
+
+</project>

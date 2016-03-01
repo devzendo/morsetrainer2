@@ -1,9 +1,16 @@
 package org.devzendo.morsetrainer2.controller;
 
+import static org.devzendo.morsetrainer2.cmd.AnsiHelper.flush;
+import static org.devzendo.morsetrainer2.cmd.AnsiHelper.print;
+import static org.devzendo.morsetrainer2.cmd.AnsiHelper.println;
+import static org.devzendo.morsetrainer2.cmd.AnsiHelper.printlnraw;
+import static org.devzendo.morsetrainer2.cmd.AnsiHelper.printraw;
+
 import java.util.Arrays;
 import java.util.Scanner;
 
 import org.apache.commons.lang3.StringUtils;
+import org.devzendo.commoncode.concurrency.ThreadUtils;
 import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIterator;
 import org.devzendo.morsetrainer2.iterator.WordIterator;
 import org.devzendo.morsetrainer2.player.Player;
@@ -31,6 +38,8 @@ public class InteractiveController implements Controller {
 
 	@Override
 	public void start() {
+		println("At the @|yellow ?|@ prompt, enter the string of Morse you heard,");
+		printlnraw("with <..> around any prosigns, then press ENTER.");
 		final WordIterator wit = new WordIterator(it);
 
 		PartyMorseCharacter[] word = null;
@@ -53,24 +62,21 @@ public class InteractiveController implements Controller {
 						cross();
 					}
 					for (final PartyMorseCharacter ch : word) {
-						System.err.print(ch.getRight().toString());
+						printraw(ch.getRight().toString());
 					}
-					System.err.println();
+					printlnraw("");
+					ThreadUtils.waitNoInterruption(250);
 				}
 			} while (entered.isEmpty());
 		}
 	}
 
 	private void cross() {
-		red();
-		System.err.print("✘ ");
-		normal();
+		print("@|bold,red ✘ |@");
 	}
 
 	private void tick() {
-		green();
-		System.err.print("✓ ");
-		normal();
+		print("@|bold,green ✓ |@");
 	}
 
 	private void normal() {
@@ -107,6 +113,8 @@ public class InteractiveController implements Controller {
 	}
 
 	private String getInput() {
+		print("@|yellow ? |@");
+		flush();
 		return StringUtils.defaultString(scanner.next(), "").trim();
 	}
 
