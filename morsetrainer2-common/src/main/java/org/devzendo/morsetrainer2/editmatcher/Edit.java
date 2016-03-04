@@ -1,7 +1,7 @@
 package org.devzendo.morsetrainer2.editmatcher;
 
 public class Edit <T> {
-	enum Type { Deletion, Match, Mutation };
+	public enum Type { Deletion, Match, Mutation };
 
 	public static <T> Edit<T> deletion(final T ch) {
 		return new Edit<T>(ch, Type.Deletion);
@@ -15,12 +15,20 @@ public class Edit <T> {
 		return new Edit<T>(ch, Type.Mutation);
 	}
 
-	protected final T ch;
-	protected final Type type;
+	private final T ch;
+	private final Type type;
 
 	public Edit(final T ch, final Type type) {
 		this.ch = ch;
 		this.type = type;
+	}
+
+	public T getCh() {
+		return ch;
+	}
+
+	public Type getType() {
+		return type;
 	}
 
 	@Override

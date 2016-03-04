@@ -10,6 +10,8 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 import org.devzendo.commoncode.concurrency.ThreadUtils;
+import org.devzendo.morsetrainer2.editmatcher.Edit;
+import org.devzendo.morsetrainer2.editmatcher.EditMatcher;
 import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIterator;
 import org.devzendo.morsetrainer2.iterator.WordIterator;
 import org.devzendo.morsetrainer2.player.Player;
@@ -64,7 +66,7 @@ public class InteractiveController implements Controller {
 		MorseCharacter[] wordMorseCharacters = null;
 		while (wit.hasNext()) {
 			word = wit.next();
-			wordMorseCharacters = (MorseCharacter[]) Arrays.stream(word).map(pmc -> pmc.getRight()).toArray(MorseCharacter::allocate);
+			wordMorseCharacters = Arrays.stream(word).map(pmc -> pmc.getRight()).toArray(MorseCharacter::allocate);
 
 			String entered = "";
 			do {
@@ -78,10 +80,22 @@ public class InteractiveController implements Controller {
 					if (Arrays.equals(wordMorseCharacters, enteredMorseCharacters)) {
 						tick();
 						incrementSuccessForLength(word.length);
-						// TODO Levenshtein distance, count correct letters.
 					} else {
 						cross();
+						// TODO Levenshtein distance, count correct letters.
+						// TODO increment occurrences of all chars in wordMorseCharacters
+						// TODO increment success count of all Match chars from the edits...
+						printraw("compare: ");
+						for (final Edit<MorseCharacter> edit : new EditMatcher<MorseCharacter>(wordMorseCharacters, enteredMorseCharacters).edits()) {
+							if (edit.getType() == Edit.Type.Match) {
+								print("@|green " + edit.getCh().toString() + "|@");
+							} else {
+								print("@|red " + edit.getCh().toString() + "|@");
+							}
+						}
+						printraw(" ");
 					}
+					printraw("sent: ");
 					for (final PartyMorseCharacter ch : word) {
 						printraw(ch.getRight().toString());
 					}
