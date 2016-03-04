@@ -61,8 +61,10 @@ public class InteractiveController implements Controller {
 		// TODO get number of groups, display current/max groups in prompt?
 
 		PartyMorseCharacter[] word = null;
+		MorseCharacter[] wordMorseCharacters = null;
 		while (wit.hasNext()) {
 			word = wit.next();
+			wordMorseCharacters = (MorseCharacter[]) Arrays.stream(word).map(pmc -> pmc.getRight()).toArray(MorseCharacter::allocate);
 
 			String entered = "";
 			do {
@@ -70,9 +72,10 @@ public class InteractiveController implements Controller {
 
 				entered = getInput();
 				if (!entered.isEmpty()) { // enter nothing to play word again
+
 					final MorseCharacter[] enteredMorseCharacters = TextToMorseCharacterParser.parse(entered);
 					incrementNumberSentAtLength(word.length);
-					if (wordEqual(word, enteredMorseCharacters)) {
+					if (Arrays.equals(wordMorseCharacters, enteredMorseCharacters)) {
 						tick();
 						incrementSuccessForLength(word.length);
 						// TODO Levenshtein distance, count correct letters.
@@ -95,14 +98,6 @@ public class InteractiveController implements Controller {
 
 	private void tick() {
 		print("@|bold,green ✓ |@");
-	}
-
-	private boolean wordEqual(final PartyMorseCharacter[] word, final MorseCharacter[] enteredMorseCharacters) {
-		final MorseCharacter[] wordChars = new MorseCharacter[word.length];
-		for (int i = 0; i < word.length; i++) {
-			wordChars[i] = word[i].getRight();
-		}
-		return Arrays.equals(wordChars, enteredMorseCharacters);
 	}
 
 	private void incrementSuccessForLength(final int length) {

@@ -62,21 +62,21 @@ public enum MorseCharacter {
 	QUESTION("?", "..--.."),
 	SLASH("/", "-..-."),
 	FULLSTOP(".", ".-.-.-");
-	
+
 	private static final Map<String, MorseCharacter> stringToMorseCharacter = new HashMap<>();
 	private static final Map<Character, MorseCharacter> charToMorseCharacter = new HashMap<>();
 	private static final Map<String, MorseCharacter> prosignTextToMorseCharacter = new HashMap<>();
-	
+
 	static {
-		for (MorseCharacter mc: MorseCharacter.values()) {
+		for (final MorseCharacter mc: MorseCharacter.values()) {
 			final String mcToString = mc.toString();
-			
+
 			stringToMorseCharacter.put(mcToString, mc);
-			
+
 			if (mcToString.length() == 1) {
 				charToMorseCharacter.put(new Character(mcToString.charAt(0)), mc);
 			}
-			
+
 			if (mcToString.charAt(0) == '<') {
 				// 0 1 2 3 length 4
 				// < K N >
@@ -86,19 +86,23 @@ public enum MorseCharacter {
 		}
 	};
 
+	public static MorseCharacter[] allocate(final int n) {
+		return new MorseCharacter[n];
+	}
+
 	private final String display;
 	private final Pulse[] pulses;
-	
+
 	private MorseCharacter(final String dotDashRep) {
 		pulses = toPulses(dotDashRep);
 		display = name();
 	}
-	
+
 	private MorseCharacter(final String toDisplay, final String dotDashRep) {
 		display = toDisplay;
 		pulses = toPulses(dotDashRep);
 	}
-	
+
 	private Pulse[] toPulses(final String dotDashRep) {
 		final Pulse[] out = new Pulse[dotDashRep.length()];
 		for (int i=0; i<dotDashRep.length(); i++) {
