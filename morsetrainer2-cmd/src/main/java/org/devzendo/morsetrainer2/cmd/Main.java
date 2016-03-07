@@ -14,8 +14,11 @@ import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIterator;
 import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIteratorFactory;
 import org.devzendo.morsetrainer2.player.Player;
 import org.devzendo.morsetrainer2.player.PlayerFactory;
+import org.devzendo.morsetrainer2.prefs.PrefsFactory;
 import org.devzendo.morsetrainer2.qso.CallsignGenerator;
 import org.devzendo.morsetrainer2.qso.QSOGenerator;
+import org.devzendo.morsetrainer2.stats.StatsFactory;
+import org.devzendo.morsetrainer2.stats.StatsStore;
 import org.fusesource.jansi.AnsiConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +43,26 @@ public class Main {
 
 		final Properties properties = getPropertiesResource();
 		try {
+			final PrefsFactory prefsFactory = new PrefsFactory("morsetrainer2", "morsetrainer2.ini");
+			if (!prefsFactory.prefsDirectoryExists()) {
+				if (!prefsFactory.createPrefsDirectory()) {
+					throw new IllegalStateException("Can't create preferences directory '" + prefsFactory.getPrefsDir() + "'");
+				}
+			}
+
+			final StatsFactory statsFactory = new StatsFactory(prefsFactory.getPrefsDir());
+			final StatsStore statsStore = statsFactory.open();
+
 			final CommandLineParser parser = new CommandLineParser(finalArgList, properties);
 			final Options options = parser.getOptions();
+
 			final CallsignGenerator callsignGenerator = new CallsignGenerator();
 			final QSOGenerator qsoGenerator = new QSOGenerator(callsignGenerator);
 			final PartyMorseCharacterIterator it = new PartyMorseCharacterIteratorFactory(options.length, options.source, options.sourceString, callsignGenerator, qsoGenerator).create();
+
 			final Player player = PlayerFactory.createPlayer(options.freqHz, options.wpm, options.fwpm, options.recordFile);
-			final Controller ctrl = ControllerFactory.createController(options.interactive, it, player);
+			final Controller ctrl = ControllerFactory.createController(options.interactive, it, player, statsStore);
+
 			ctrl.prepare();
 			player.play("VVV ");
 			ctrl.start();

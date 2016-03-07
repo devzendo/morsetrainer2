@@ -6,7 +6,10 @@ import static org.devzendo.morsetrainer2.cmd.AnsiHelper.printlnraw;
 import static org.devzendo.morsetrainer2.cmd.AnsiHelper.printraw;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.devzendo.commoncode.concurrency.ThreadUtils;
@@ -15,6 +18,7 @@ import org.devzendo.morsetrainer2.editmatcher.EditMatcher;
 import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIterator;
 import org.devzendo.morsetrainer2.iterator.WordIterator;
 import org.devzendo.morsetrainer2.player.Player;
+import org.devzendo.morsetrainer2.stats.StatsStore;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 import org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser;
@@ -30,11 +34,13 @@ public class InteractiveController implements Controller {
 
 	private final PartyMorseCharacterIterator it;
 	private final Player player;
+	private final StatsStore statsStore;
 	private final ConsoleReader consoleReader;
 
-	public InteractiveController(final PartyMorseCharacterIterator it, final Player player) {
+	public InteractiveController(final PartyMorseCharacterIterator it, final Player player, final StatsStore statsStore) {
 		this.it = it;
 		this.player = player;
+		this.statsStore = statsStore;
         try {
 			consoleReader = new ConsoleReader();
 		} catch (final IOException e) {
@@ -64,9 +70,12 @@ public class InteractiveController implements Controller {
 
 		PartyMorseCharacter[] word = null;
 		MorseCharacter[] wordMorseCharacters = null;
+		final Set<Integer> wordLengthsSent = new HashSet<>();
+		final Set<MorseCharacter> morseCharactersDecodedSuccessfully = new HashSet<>();
 		while (wit.hasNext()) {
 			word = wit.next();
 			wordMorseCharacters = Arrays.stream(word).map(pmc -> pmc.getRight()).toArray(MorseCharacter::allocate);
+			wordLengthsSent.add(word.length);
 
 			String entered = "";
 			do {
@@ -76,19 +85,24 @@ public class InteractiveController implements Controller {
 				if (!entered.isEmpty()) { // enter nothing to play word again
 
 					final MorseCharacter[] enteredMorseCharacters = TextToMorseCharacterParser.parse(entered);
-					incrementNumberSentAtLength(word.length);
+					statsStore.incrementWordLengthSentCount(word.length);
 					if (Arrays.equals(wordMorseCharacters, enteredMorseCharacters)) {
 						tick();
-						incrementSuccessForLength(word.length);
+						statsStore.incrementWordLengthSuccessCount(word.length);
 					} else {
 						cross();
-						// TODO Levenshtein distance, count correct letters.
-						// TODO increment occurrences of all chars in wordMorseCharacters
-						// TODO increment success count of all Match chars from the edits...
+						// Levenshtein distance, count correct letters.
+						// Increment occurrences of all chars in wordMorseCharacters
+						for (final MorseCharacter mc : wordMorseCharacters) {
+							statsStore.incrementSentCount(mc);
+						}
+						// Increment success count of all Match chars from the edits...
 						printraw("compare: ");
 						for (final Edit<MorseCharacter> edit : new EditMatcher<MorseCharacter>(wordMorseCharacters, enteredMorseCharacters).edits()) {
 							if (edit.getType() == Edit.Type.Match) {
 								print("@|green " + edit.getCh().toString() + "|@");
+								statsStore.incrementSuccessfulDecodeCount(edit.getCh());
+								morseCharactersDecodedSuccessfully.add(edit.getCh());
 							} else {
 								print("@|red " + edit.getCh().toString() + "|@");
 							}
@@ -104,6 +118,23 @@ public class InteractiveController implements Controller {
 				}
 			} while (entered.isEmpty());
 		}
+
+		// Record this session's performance
+		recordSessionPerformance(wordLengthsSent, morseCharactersDecodedSuccessfully);
+	}
+
+	private void recordSessionPerformance(final Set<Integer> wordLengthsSent, final Set<MorseCharacter> morseCharactersDecodedSuccessfully) {
+		final LocalDateTime now = LocalDateTime.now();
+
+		for (final Integer wordLength: wordLengthsSent) {
+			final Integer percentage = statsStore.getWordLengthSuccessPercentage(wordLength);
+			statsStore.recordWordLengthPerformance(now, percentage);
+		}
+
+		for (final MorseCharacter ch: morseCharactersDecodedSuccessfully) {
+			final Integer percentage = statsStore.getMorseCharacterSuccessPercentage(ch);
+			statsStore.recordMorseCharacterPerformance(now, percentage);
+		}
 	}
 
 	private void cross() {
@@ -112,16 +143,6 @@ public class InteractiveController implements Controller {
 
 	private void tick() {
 		print("@|bold,green ✓ |@");
-	}
-
-	private void incrementSuccessForLength(final int length) {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void incrementNumberSentAtLength(final int length) {
-		// TODO Auto-generated method stub
-
 	}
 
 	private String getInput() {
