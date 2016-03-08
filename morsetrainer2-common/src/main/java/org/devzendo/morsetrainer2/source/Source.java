@@ -4,30 +4,19 @@ import java.util.Optional;
 
 public class Source {
 
-	public static enum SourceType {
-		All(LETTERS + NUMBERS + PUNCTUATION + PROSIGNS),
-		Letters(LETTERS),
-		Numbers(NUMBERS),
-		Punctuation(PUNCTUATION),
-		Prosigns(PROSIGNS),
-		Callsigns(""),
-		QSO(""),
-		Set(""),
-		File(""),
-		Stdin(""),
-		Text("");
-	
-		private final String content;
-		private SourceType(final String content) {
-			this.content = content;
-		}
-		
-		public static Optional<SourceType> fromString(final String anyString) {
+	public static enum PlayType {
+		Callsigns,
+		QSO,
+		File,
+		Stdin,
+		Text;
+
+		public static Optional<PlayType> fromString(final String anyString) {
 			if (anyString == null) {
 				return Optional.empty();
 			}
 			final String lowerCase = anyString.toLowerCase();
-			for (SourceType value : SourceType.values()) {
+			for (final PlayType value : PlayType.values()) {
 				if (value.name().toLowerCase().equals(lowerCase)) {
 					return Optional.of(value);
 				}
@@ -37,7 +26,34 @@ public class Source {
 			}
 			return Optional.empty();
 		}
-	
+	}
+
+	public static enum SourceType {
+		All(LETTERS + NUMBERS + PUNCTUATION + PROSIGNS),
+		Letters(LETTERS),
+		Numbers(NUMBERS),
+		Punctuation(PUNCTUATION),
+		Prosigns(PROSIGNS),
+		Set("");
+
+		private final String content;
+		private SourceType(final String content) {
+			this.content = content;
+		}
+
+		public static Optional<SourceType> fromString(final String anyString) {
+			if (anyString == null) {
+				return Optional.empty();
+			}
+			final String lowerCase = anyString.toLowerCase();
+			for (final SourceType value : SourceType.values()) {
+				if (value.name().toLowerCase().equals(lowerCase)) {
+					return Optional.of(value);
+				}
+			}
+			return Optional.empty();
+		}
+
 		public String content() {
 			return content;
 		}

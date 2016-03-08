@@ -2,6 +2,7 @@ package org.devzendo.morsetrainer2.cmd;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
@@ -14,8 +15,9 @@ import java.util.Properties;
 
 import org.devzendo.morsetrainer2.logging.LoggingUnittest;
 import org.devzendo.morsetrainer2.source.Source;
-import org.devzendo.morsetrainer2.source.Source.SourceType;
+import org.devzendo.morsetrainer2.source.Source.PlayType;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -129,10 +131,11 @@ public class TestCommandLineParser {
 	// Source
 
 	@Test
-	public void defaultSource() throws Exception {
+	public void defaultSourceIsAllWithNoPlay() throws Exception {
 		final Options options = construct().getOptions();
 		assertThat(options.source, equalTo(Source.SourceType.All));
 		assertThat(options.sourceString, equalTo("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,./?+=<AR><AS><BK><BT><CL><CQ><HH><KA><KN><NR><SK><VE>"));
+		assertThat(options.play, nullValue());
 	}
 
 	@Test
@@ -164,20 +167,6 @@ public class TestCommandLineParser {
 	}
 
 	@Test
-	public void callsignsSource() throws Exception {
-		final Options options = construct("-source", "Callsigns").getOptions();
-		assertThat(options.source, equalTo(Source.SourceType.Callsigns));
-		// can't test source string, it's random
-	}
-
-	@Test
-	public void qsoSource() throws Exception {
-		final Options options = construct("-source", "QSO").getOptions();
-		assertThat(options.source, equalTo(Source.SourceType.QSO));
-		// can't test source string, it's random
-	}
-
-	@Test
 	public void setSource() throws Exception {
 		final Options options = construct("-source", "set", "abcz<AR>").getOptions();
 		assertThat(options.source, equalTo(Source.SourceType.Set));
@@ -185,46 +174,60 @@ public class TestCommandLineParser {
 	}
 
 	@Test
-	public void fileSource() throws Exception {
-		final Options options = construct("-source", "file", "src/test/resources/input.txt").getOptions();
-		assertThat(options.source, equalTo(Source.SourceType.File));
+	public void callsignsPlay() throws Exception {
+		final Options options = construct("-play", "Callsigns").getOptions();
+		assertThat(options.play, equalTo(Source.PlayType.Callsigns));
+		// can't test source string, it's random
+	}
+
+	@Test
+	public void qsoPlay() throws Exception {
+		final Options options = construct("-play", "QSO").getOptions();
+		assertThat(options.play, equalTo(Source.PlayType.QSO));
+		// can't test source string, it's random
+	}
+
+	@Test
+	public void filePlay() throws Exception {
+		final Options options = construct("-play", "file", "src/test/resources/input.txt").getOptions();
+		assertThat(options.play, equalTo(Source.PlayType.File));
 		assertThat(options.sourceString, equalTo("ABCDE ")); // Note space added at end of line.
 	}
 
 	@Test
-	public void emptyFileSource() throws Exception {
-		constructWithFailure("-source file must be followed by a file name", "-source", "file");
+	public void emptyFilePlay() throws Exception {
+		constructWithFailure("-play file must be followed by a file name", "-play", "file");
 	}
 
 	@Test
-	public void nonexistentFileSource() throws Exception {
+	public void nonexistentFilePlay() throws Exception {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage(matchesPattern("File '.*' not found"));
-		construct("-source", "file", "nonexistent");
+		construct("-play", "file", "nonexistent");
 	}
 
 	@Test
-	public void stdinHyphenSource() throws Exception {
-		tryStdinSource("-");
+	public void stdinHyphenPlay() throws Exception {
+		tryStdinPlay("-");
 	}
 
 	@Test
-	public void stdinStdinSource() throws Exception {
-		tryStdinSource("STDIN");
+	public void stdinStdinPlay() throws Exception {
+		tryStdinPlay("STDIN");
 	}
 
 	@Test
-	public void stdinStdinCaseSource() throws Exception {
-		tryStdinSource("sTdIN");
+	public void stdinStdinCasePlay() throws Exception {
+		tryStdinPlay("sTdIN");
 	}
 
-	private void tryStdinSource(final String sourceName) throws IOException {
+	private void tryStdinPlay(final String playName) throws IOException {
 		final InputStream origStdin = System.in;
 		try(final ByteArrayInputStream bais = new ByteArrayInputStream("STDINTXT\r\n INPUT".getBytes())) {
 			System.setIn(bais);
 
-			final Options options = construct("-source", sourceName).getOptions();
-			assertThat(options.source, equalTo(Source.SourceType.Stdin));
+			final Options options = construct("-play", playName).getOptions();
+			assertThat(options.play, equalTo(Source.PlayType.Stdin));
 			assertThat(options.sourceString, equalTo("STDINTXT  INPUT ")); // Note spaces
 
 		} finally {
@@ -233,18 +236,28 @@ public class TestCommandLineParser {
 	}
 
 	@Test
+	public void emptySetSource() throws Exception {
+		constructWithFailure("-source set must be followed by a string of source characters", "-source", "set");
+	}
+
+	@Test
 	public void unknownSource() throws Exception {
-		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|qso]", "-source", "zarjaz");
+		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set]", "-source", "zarjaz");
 	}
 
 	@Test
 	public void emptySource() throws Exception {
-		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|qso]", "-source");
+		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set]", "-source");
 	}
 
 	@Test
-	public void emptySetSource() throws Exception {
-		constructWithFailure("-source set must be followed by a string of source characters", "-source", "set");
+	public void unknownPlay() throws Exception {
+		constructWithFailure("-play must be followed by an input type [qso|callsigns|file|stdin|-]", "-play", "zarjaz");
+	}
+
+	@Test
+	public void emptyPlay() throws Exception {
+		constructWithFailure("-play must be followed by an input type [qso|callsigns|file|stdin|-]", "-play");
 	}
 
 	@Test
@@ -327,14 +340,20 @@ public class TestCommandLineParser {
 	}
 
 	@Test
-	public void emptyText() throws Exception {
-		constructWithFailure("-source text <some text> must be followed by a string to play", "-source", "text");
+	public void emptyTextPlay() throws Exception {
+		constructWithFailure("-play text <some text> must be followed by a string to play", "-play", "text");
 	}
 
 	@Test
-	public void textSource() throws Exception {
-		final Options options = construct("-source", "text", "1 hoopy $ frood <kn>").getOptions();
-		assertThat(options.source, equalTo(SourceType.Text));
+	@Ignore
+	public void cannotUseBothPlayAndSource() throws Exception {
+		constructWithFailure("-play ... and -source ... cannot be used together", "-play", "text", "foo", "-source", "numbers");
+	}
+
+	@Test
+	public void textPlay() throws Exception {
+		final Options options = construct("-play", "text", "1 hoopy $ frood <kn>").getOptions();
+		assertThat(options.play, equalTo(PlayType.Text));
 		assertThat(options.sourceString, equalTo("1 HOOPY  FROOD <KN>"));
 	}
 

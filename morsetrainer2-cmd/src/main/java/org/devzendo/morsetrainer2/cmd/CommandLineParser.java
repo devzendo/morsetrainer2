@@ -30,25 +30,30 @@ public class CommandLineParser {
 
 		while (hasNextArg()) {
 			final String arg = nextArg();
-
 			switch (arg) {
+
 			case "-version":
 				showVersion(properties);
 				finish();
+
 			case "-usage":
 			case "-?":
 			case "-help":
 				usage();
 				finish();
+
 			case "-wpm":
 				options.wpm = nextNumArg(12, 60, "wpm");
 				break;
+
 			case "-fwpm":
 				options.fwpm = nextNumArg(12, 60, "fwpm");
 				break;
+
 			case "-freq":
 				options.freqHz = nextNumArg(400, 800, "freq");
 				break;
+
 			case "-source":
 				options.source = nextSourceArg();
 				switch (options.source) {
@@ -68,11 +73,19 @@ public class CommandLineParser {
 								"-source set must be followed by a string of source characters");
 					}
 					break;
+				default:
+					throw new IllegalArgumentException("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set]");
+				}
+				break;
+
+			case "-play":
+				options.play = nextPlayArg();
+				switch (options.play) {
 				case File:
 					if (hasNextArg()) {
 						options.sourceString = TextToMorseCharacterParser.parseToString(readFile(new File(nextArg())));
 					} else {
-						throw new IllegalArgumentException("-source file must be followed by a file name");
+						throw new IllegalArgumentException("-play file must be followed by a file name");
 					}
 					break;
 				case Stdin:
@@ -84,7 +97,7 @@ public class CommandLineParser {
 						options.sourceString = TextToMorseCharacterParser.parseToString(textString);
 					} else {
 						throw new IllegalArgumentException(
-								"-source text <some text> must be followed by a string to play");
+								"-play text <some text> must be followed by a string to play");
 					}
 					break;
 				// No source string is set for these....
@@ -92,11 +105,15 @@ public class CommandLineParser {
 				case Callsigns:
 					options.sourceString = "";
 					break;
+				default:
+					throw new IllegalArgumentException("-play must be followed by an input type [qso|callsigns|file|stdin|-]");
 				}
 				break;
+
 			case "-interactive":
 				options.interactive = true;
 				break;
+
 			case "-record":
 				if (hasNextArg()) {
 					final File recordingFile = new File(nextArg());
@@ -109,6 +126,7 @@ public class CommandLineParser {
 					throw new IllegalArgumentException("-record <file> must be followed by a file name");
 				}
 				break;
+
 			case "-length":
 				boolean badArg = true;
 				if (hasNextArg()) {
@@ -133,11 +151,13 @@ public class CommandLineParser {
 							"-length <1..9|random> must be followed by an number in the range 1 to 9, or 'random'");
 				}
 				break;
+
 			default:
 				usage();
 				throw new IllegalArgumentException("Unknown option '" + arg + "'");
 			}
 		}
+
 		// Fill in defaults
 		if (options.wpm == null) {
 			options.wpm = 12;
@@ -148,10 +168,12 @@ public class CommandLineParser {
 		if (options.freqHz == null) {
 			options.freqHz = 600;
 		}
+
 		// Final validation
 		if (options.interactive && options.recordFile.isPresent()) {
 			throw new IllegalArgumentException("-interactive cannot be used with -record");
 		}
+
 	}
 
 	private void finish() {
@@ -195,7 +217,18 @@ public class CommandLineParser {
 			}
 		}
 		throw new IllegalArgumentException(
-				"-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|qso]");
+				"-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set]");
+	}
+
+	private Source.PlayType nextPlayArg() {
+		if (hasNextArg()) {
+			final Optional<Source.PlayType> out = Source.PlayType.fromString(nextArg());
+			if (out.isPresent()) {
+				return out.get();
+			}
+		}
+		throw new IllegalArgumentException(
+				"-play must be followed by an input type [qso|callsigns|file|stdin|-]");
 	}
 
 	private String readFile(final File file) {
@@ -270,13 +303,13 @@ public class CommandLineParser {
 		println("                        to send, or with set '...', use the specific");
 		println("                        characters specified.");
 		println("                        Default is 'all' if not given.");
-		println("@|bold Source (text to play/generate):|@");
-		println("@|green -source [stdin|-|file|callsigns|qso|text]|@");
-		println("@|green -source stdin   or  -source -|@");
+		println("@|bold Play (text to play/generate):|@");
+		println("@|green -play [stdin|-|file|callsigns|qso|text]|@");
+		println("@|green -play stdin   or  -play -|@");
 		println("                      - Play the text from standard input.");
-		println("@|green -source file <filename>|@");
+		println("@|green -play file <filename>|@");
 		println("                      - Play the text read from a file.");
-		println("@|green -source text <some text>|@");
+		println("@|green -play text <some text>|@");
 		println("                      - Play the text in the next argument (beware quoting).");
 		println("");
 		println("@|bold -? or -help or -usage|@ - Show this usage summary");

@@ -9,8 +9,9 @@ public class Options {
 	public Integer wpm;
 	public Integer fwpm;
 	public Integer freqHz;
-	
+
 	public Source.SourceType source = Source.SourceType.All;
+	public Source.PlayType play = null;
 	public String sourceString = source.content();
 
 	public boolean interactive = false;
