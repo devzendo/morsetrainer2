@@ -10,9 +10,9 @@ public class Options {
 	public Integer fwpm;
 	public Integer freqHz;
 
-	public Source.SourceType source = Source.SourceType.All;
+	public Source.SourceType source = null;
 	public Source.PlayType play = null;
-	public String sourceString = source.content();
+	public String sourceString = "";
 
 	public boolean interactive = false;
 	public Optional<File> recordFile = Optional.empty();

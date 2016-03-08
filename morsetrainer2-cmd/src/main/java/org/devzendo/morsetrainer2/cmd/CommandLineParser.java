@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 import org.devzendo.morsetrainer2.source.Source;
+import org.devzendo.morsetrainer2.source.Source.SourceType;
 import org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,6 +168,13 @@ public class CommandLineParser {
 		}
 		if (options.freqHz == null) {
 			options.freqHz = 600;
+		}
+		if (options.source != null && options.play != null) {
+			throw new IllegalArgumentException("-play ... and -source ... cannot be used together");
+		}
+		if (options.source == null && options.play == null) {
+			options.source = SourceType.All;
+			options.sourceString = options.source.content();
 		}
 
 		// Final validation

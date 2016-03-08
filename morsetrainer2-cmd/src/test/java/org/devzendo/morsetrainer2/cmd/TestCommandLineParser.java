@@ -16,8 +16,8 @@ import java.util.Properties;
 import org.devzendo.morsetrainer2.logging.LoggingUnittest;
 import org.devzendo.morsetrainer2.source.Source;
 import org.devzendo.morsetrainer2.source.Source.PlayType;
+import org.devzendo.morsetrainer2.source.Source.SourceType;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -345,14 +345,28 @@ public class TestCommandLineParser {
 	}
 
 	@Test
-	@Ignore
 	public void cannotUseBothPlayAndSource() throws Exception {
 		constructWithFailure("-play ... and -source ... cannot be used together", "-play", "text", "foo", "-source", "numbers");
 	}
 
 	@Test
+	public void playDoesNotSetSource() throws Exception {
+		final Options options = construct("-play", "text", "1 hoopy $ frood <kn>").getOptions();
+		assertThat(options.source, nullValue());
+		assertThat(options.play, equalTo(PlayType.Text));
+	}
+
+	@Test
+	public void sourceDoesNotSetPlay() throws Exception {
+		final Options options = construct("-source", "all").getOptions();
+		assertThat(options.play, nullValue());
+		assertThat(options.source, equalTo(SourceType.All));
+	}
+
+	@Test
 	public void textPlay() throws Exception {
 		final Options options = construct("-play", "text", "1 hoopy $ frood <kn>").getOptions();
+		assertThat(options.source, nullValue());
 		assertThat(options.play, equalTo(PlayType.Text));
 		assertThat(options.sourceString, equalTo("1 HOOPY  FROOD <KN>"));
 	}
