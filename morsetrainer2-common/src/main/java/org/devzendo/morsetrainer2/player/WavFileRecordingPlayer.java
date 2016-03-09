@@ -1,23 +1,18 @@
 package org.devzendo.morsetrainer2.player;
 
 import java.io.File;
+import java.util.List;
 
-import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
+import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 
-public class WavFileRecordingPlayer implements Player {
+public class WavFileRecordingPlayer extends AbstractPlayer implements Player {
 
 	public WavFileRecordingPlayer(final Integer freqHz, final Integer wpm, final Integer fwpm, final File file) {
-		// TODO Auto-generated constructor stub
+		super(freqHz, wpm, fwpm);
 	}
 
 	@Override
-	public void play(final String anyString) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void play(final PartyMorseCharacter... chars) {
+	protected void playMorseCharacters(final List<MorseCharacter> morseChars) {
 		// TODO Auto-generated method stub
 
 	}
