@@ -57,13 +57,13 @@ public class CommandLineParser {
 
 			case "-source":
 				options.source = nextSourceArg();
-				switch (options.source) {
+				switch (options.source.get()) {
 				case All:
 				case Letters:
 				case Numbers:
 				case Prosigns:
 				case Punctuation:
-					options.sourceString = options.source.content();
+					options.sourceString = options.source.get().content();
 					break;
 				case Set:
 					if (hasNextArg()) {
@@ -81,7 +81,7 @@ public class CommandLineParser {
 
 			case "-play":
 				options.play = nextPlayArg();
-				switch (options.play) {
+				switch (options.play.get()) {
 				case File:
 					if (hasNextArg()) {
 						options.sourceString = TextToMorseCharacterParser.parseToString(readFile(new File(nextArg())));
@@ -169,12 +169,12 @@ public class CommandLineParser {
 		if (options.freqHz == null) {
 			options.freqHz = 600;
 		}
-		if (options.source != null && options.play != null) {
+		if (options.source.isPresent() && options.play.isPresent()) {
 			throw new IllegalArgumentException("-play ... and -source ... cannot be used together");
 		}
-		if (options.source == null && options.play == null) {
-			options.source = SourceType.All;
-			options.sourceString = options.source.content();
+		if (!options.source.isPresent() && !options.play.isPresent()) {
+			options.source = Optional.of(SourceType.All);
+			options.sourceString = options.source.get().content();
 		}
 
 		// Final validation
@@ -217,22 +217,22 @@ public class CommandLineParser {
 		throw new IllegalArgumentException("-" + name + " must be in the range " + low + " to " + high);
 	}
 
-	private Source.SourceType nextSourceArg() {
+	private Optional<Source.SourceType> nextSourceArg() {
 		if (hasNextArg()) {
 			final Optional<Source.SourceType> out = Source.SourceType.fromString(nextArg());
 			if (out.isPresent()) {
-				return out.get();
+				return out;
 			}
 		}
 		throw new IllegalArgumentException(
 				"-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set]");
 	}
 
-	private Source.PlayType nextPlayArg() {
+	private Optional<Source.PlayType> nextPlayArg() {
 		if (hasNextArg()) {
 			final Optional<Source.PlayType> out = Source.PlayType.fromString(nextArg());
 			if (out.isPresent()) {
-				return out.get();
+				return out;
 			}
 		}
 		throw new IllegalArgumentException(

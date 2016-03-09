@@ -2,7 +2,6 @@ package org.devzendo.morsetrainer2.cmd;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
@@ -11,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.devzendo.morsetrainer2.logging.LoggingUnittest;
@@ -133,64 +133,64 @@ public class TestCommandLineParser {
 	@Test
 	public void defaultSourceIsAllWithNoPlay() throws Exception {
 		final Options options = construct().getOptions();
-		assertThat(options.source, equalTo(Source.SourceType.All));
+		assertThat(options.source, equalTo(Optional.of(Source.SourceType.All)));
 		assertThat(options.sourceString, equalTo("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,./?+=<AR><AS><BK><BT><CL><CQ><HH><KA><KN><NR><SK><VE>"));
-		assertThat(options.play, nullValue());
+		assertThat(options.play, equalTo(Optional.empty()));
 	}
 
 	@Test
 	public void lettersSource() throws Exception {
 		final Options options = construct("-source", "LeTTeRs").getOptions();
-		assertThat(options.source, equalTo(Source.SourceType.Letters));
+		assertThat(options.source, equalTo(Optional.of(Source.SourceType.Letters)));
 		assertThat(options.sourceString, equalTo("ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
 	}
 
 	@Test
 	public void numbersSource() throws Exception {
 		final Options options = construct("-source", "Numbers").getOptions();
-		assertThat(options.source, equalTo(Source.SourceType.Numbers));
+		assertThat(options.source, equalTo(Optional.of(Source.SourceType.Numbers)));
 		assertThat(options.sourceString, equalTo("0123456789"));
 	}
 
 	@Test
 	public void punctuationSource() throws Exception {
 		final Options options = construct("-source", "punctuation").getOptions();
-		assertThat(options.source, equalTo(Source.SourceType.Punctuation));
+		assertThat(options.source, equalTo(Optional.of(Source.SourceType.Punctuation)));
 		assertThat(options.sourceString, equalTo(",./?+="));
 	}
 
 	@Test
 	public void prosignsSource() throws Exception {
 		final Options options = construct("-source", "prosigns").getOptions();
-		assertThat(options.source, equalTo(Source.SourceType.Prosigns));
+		assertThat(options.source, equalTo(Optional.of(Source.SourceType.Prosigns)));
 		assertThat(options.sourceString, equalTo("<AR><AS><BK><BT><CL><CQ><HH><KA><KN><NR><SK><VE>"));
 	}
 
 	@Test
 	public void setSource() throws Exception {
 		final Options options = construct("-source", "set", "abcz<AR>").getOptions();
-		assertThat(options.source, equalTo(Source.SourceType.Set));
+		assertThat(options.source, equalTo(Optional.of(Source.SourceType.Set)));
 		assertThat(options.sourceString, equalTo("ABCZ<AR>"));
 	}
 
 	@Test
 	public void callsignsPlay() throws Exception {
 		final Options options = construct("-play", "Callsigns").getOptions();
-		assertThat(options.play, equalTo(Source.PlayType.Callsigns));
+		assertThat(options.play, equalTo(Optional.of(Source.PlayType.Callsigns)));
 		// can't test source string, it's random
 	}
 
 	@Test
 	public void qsoPlay() throws Exception {
 		final Options options = construct("-play", "QSO").getOptions();
-		assertThat(options.play, equalTo(Source.PlayType.QSO));
+		assertThat(options.play, equalTo(Optional.of(Source.PlayType.QSO)));
 		// can't test source string, it's random
 	}
 
 	@Test
 	public void filePlay() throws Exception {
 		final Options options = construct("-play", "file", "src/test/resources/input.txt").getOptions();
-		assertThat(options.play, equalTo(Source.PlayType.File));
+		assertThat(options.play, equalTo(Optional.of(Source.PlayType.File)));
 		assertThat(options.sourceString, equalTo("ABCDE ")); // Note space added at end of line.
 	}
 
@@ -227,7 +227,7 @@ public class TestCommandLineParser {
 			System.setIn(bais);
 
 			final Options options = construct("-play", playName).getOptions();
-			assertThat(options.play, equalTo(Source.PlayType.Stdin));
+			assertThat(options.play, equalTo(Optional.of(Source.PlayType.Stdin)));
 			assertThat(options.sourceString, equalTo("STDINTXT  INPUT ")); // Note spaces
 
 		} finally {
@@ -352,22 +352,22 @@ public class TestCommandLineParser {
 	@Test
 	public void playDoesNotSetSource() throws Exception {
 		final Options options = construct("-play", "text", "1 hoopy $ frood <kn>").getOptions();
-		assertThat(options.source, nullValue());
-		assertThat(options.play, equalTo(PlayType.Text));
+		assertThat(options.source, equalTo(Optional.empty()));
+		assertThat(options.play, equalTo(Optional.of(PlayType.Text)));
 	}
 
 	@Test
 	public void sourceDoesNotSetPlay() throws Exception {
 		final Options options = construct("-source", "all").getOptions();
-		assertThat(options.play, nullValue());
-		assertThat(options.source, equalTo(SourceType.All));
+		assertThat(options.play, equalTo(Optional.empty()));
+		assertThat(options.source, equalTo(Optional.of(SourceType.All)));
 	}
 
 	@Test
 	public void textPlay() throws Exception {
 		final Options options = construct("-play", "text", "1 hoopy $ frood <kn>").getOptions();
-		assertThat(options.source, nullValue());
-		assertThat(options.play, equalTo(PlayType.Text));
+		assertThat(options.source, equalTo(Optional.empty()));
+		assertThat(options.play, equalTo(Optional.of(PlayType.Text)));
 		assertThat(options.sourceString, equalTo("1 HOOPY  FROOD <KN>"));
 	}
 

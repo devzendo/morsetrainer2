@@ -10,8 +10,8 @@ public class Options {
 	public Integer fwpm;
 	public Integer freqHz;
 
-	public Source.SourceType source = null;
-	public Source.PlayType play = null;
+	public Optional<Source.SourceType> source = Optional.empty();
+	public Optional<Source.PlayType> play = Optional.empty();
 	public String sourceString = "";
 
 	public boolean interactive = false;
