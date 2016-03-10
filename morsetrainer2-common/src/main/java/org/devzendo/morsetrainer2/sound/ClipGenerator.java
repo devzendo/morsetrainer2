@@ -139,7 +139,7 @@ public class ClipGenerator {
 		return samplesToClip(samples);
 	}
 
-	private byte[] getRawWaveform() {
+	public byte[] getRawWaveform() {
 		final byte[] samples = new byte[waveformPulseLength];
 		int index = 0;
 		for (final Pulse pulse : waveformPulses) {
