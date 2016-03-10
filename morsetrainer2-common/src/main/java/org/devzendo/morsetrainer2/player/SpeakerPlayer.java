@@ -2,6 +2,8 @@ package org.devzendo.morsetrainer2.player;
 
 import java.util.List;
 
+import javax.sound.sampled.Clip;
+
 import org.devzendo.morsetrainer2.sound.ClipPlayer;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 import org.devzendo.morsetrainer2.symbol.Pulse;
@@ -31,5 +33,10 @@ public class SpeakerPlayer extends AbstractPlayer implements Player {
 		} catch (final InterruptedException e) {
 			LOGGER.warn("Interrupted when playing: " + e.getMessage());
 		}
+	}
+
+	@Override
+	public void finish() {
+		// nothing to do in the speaker variant
 	}
 }

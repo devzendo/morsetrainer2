@@ -8,4 +8,5 @@ public interface Player {
 
 	void play(PartyMorseCharacter ... chars);
 
+	void finish();
 }
