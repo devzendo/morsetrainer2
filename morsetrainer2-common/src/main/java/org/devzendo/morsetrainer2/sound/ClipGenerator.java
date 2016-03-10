@@ -44,6 +44,10 @@ public class ClipGenerator {
 	private final List<Pulse> waveformPulses = new ArrayList<>();
 	private int waveformPulseLength = 0;
 
+	public static AudioFormat getFormat() {
+		return FORMAT;
+	}
+
 	public ClipGenerator(final int wpm, final int fwpm, final int freqHz) {
 		this.wpm = wpm;
 		this.fwpm = fwpm;
@@ -131,6 +135,11 @@ public class ClipGenerator {
 	}
 
 	public Clip getWaveform() {
+		final byte[] samples = getRawWaveform();
+		return samplesToClip(samples);
+	}
+
+	private byte[] getRawWaveform() {
 		final byte[] samples = new byte[waveformPulseLength];
 		int index = 0;
 		for (final Pulse pulse : waveformPulses) {
@@ -158,7 +167,7 @@ public class ClipGenerator {
 				break;
 			}
 		}
-		return samplesToClip(samples);
+		return samples;
 	}
 
 	private Clip samplesToClip(final byte[] out) {
