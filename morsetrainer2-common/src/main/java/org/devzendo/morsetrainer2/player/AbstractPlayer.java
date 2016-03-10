@@ -6,6 +6,7 @@ import java.util.List;
 import org.devzendo.morsetrainer2.sound.ClipGenerator;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
+import org.devzendo.morsetrainer2.symbol.Pulse;
 import org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser;
 import org.devzendo.morsetrainer2.xlat.MorseCharactersToPulses;
 
@@ -35,4 +36,12 @@ public abstract class AbstractPlayer {
 	}
 
 	abstract protected void playMorseCharacters(final List<MorseCharacter> morseChars);
+
+	protected void buildWaveform(final List<MorseCharacter> morseChars) {
+		// TODO take party into account...
+		clipGen.clearWaveform();
+		for (final Pulse pulse : morseCharactersToPulses.translate(morseChars)) {
+			clipGen.addToWaveform(pulse);
+		}
+	}
 }
