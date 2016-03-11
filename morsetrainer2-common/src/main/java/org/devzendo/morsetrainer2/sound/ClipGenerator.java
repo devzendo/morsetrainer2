@@ -13,12 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ClipGenerator {
-	private static int FRAME_SIZE = 2;
-	private static int SAMPLE_RATE = 8000;
-	private static Double TWO_PI = Math.PI * 2.0;
-	private static Logger LOGGER = LoggerFactory.getLogger(ClipGenerator.class);
+	private static final boolean IS_BIG_ENDIAN = false;
+	private static final int CHANNELS = 1;
+	private static final int SAMPLE_SIZE_IN_BITS = 8;
+	private static final int FRAME_SIZE = 2;
+	private static final int SAMPLE_RATE = 8000;
+	private static final Double TWO_PI = Math.PI * 2.0;
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClipGenerator.class);
     private static final AudioFormat FORMAT = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-            SAMPLE_RATE, 8, 1, FRAME_SIZE, SAMPLE_RATE, false);
+            SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, FRAME_SIZE, SAMPLE_RATE, IS_BIG_ENDIAN);
 
 	private double ditDurationSeconds = 0.0;
 	private Clip ditClip = null;
