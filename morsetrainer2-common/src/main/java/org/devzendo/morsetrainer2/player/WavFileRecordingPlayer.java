@@ -33,11 +33,23 @@ public class WavFileRecordingPlayer extends AbstractPlayer implements Player {
 	@Override
 	protected void playMorseCharacters(final List<MorseCharacter> morseChars) {
 		buildWaveform(morseChars);
-		wavAppender.append(clipGen.getRawWaveform());
+		try {
+			wavAppender.append(clipGen.getRawWaveform());
+		} catch (final IOException e) {
+			final String msg = "Cannot close recording file: " + e.getMessage();
+			LOGGER.error(msg);
+			throw new IllegalStateException(msg, e);
+		}
 	}
 
 	@Override
 	public void finish() {
-		wavAppender.close();
+		try {
+			wavAppender.close();
+		} catch (final IOException e) {
+			final String msg = "Cannot close recording file: " + e.getMessage();
+			LOGGER.error(msg);
+			throw new IllegalStateException(msg, e);
+		}
 	}
 }
