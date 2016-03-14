@@ -66,15 +66,9 @@ public class TestWavFileRecordingPlayer {
 		player.finish();
 
 		assertThat(tempFile.exists(), equalTo(true));
-		assertThat(tempFile.length(), equalTo(14924L));
-		assertThat(mainChunkSize(), equalTo(4L + 8L + 16L + 8L + 14880L));
-		assertThat(dataChunkSize(), equalTo(14880L));
-		try {
-			Thread.sleep(40000);
-		} catch (final InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		assertThat(tempFile.length(), equalTo(29804L));
+		assertThat(mainChunkSize(), equalTo(4L + 8L + 16L + 8L + 59520L));
+		assertThat(dataChunkSize(), equalTo(59520L));
 	}
 
 	private static long getLE(final byte[] buffer, int pos, int numBytes) {

@@ -13,15 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ClipGenerator {
-	private static final boolean IS_BIG_ENDIAN = false;
+	private static final boolean IS_BIG_ENDIAN = true;
 	private static final int CHANNELS = 1;
-	private static final int SAMPLE_SIZE_IN_BITS = 8;
+	private static final int SAMPLE_SIZE_IN_BITS = 16;
 	private static final int FRAME_SIZE = 2;
 	private static final int SAMPLE_RATE = 8000;
 	private static final Double TWO_PI = Math.PI * 2.0;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClipGenerator.class);
-    private static final AudioFormat FORMAT = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-            SAMPLE_RATE, SAMPLE_SIZE_IN_BITS, CHANNELS, FRAME_SIZE, SAMPLE_RATE, IS_BIG_ENDIAN);
+	private static final AudioFormat FORMAT = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, SAMPLE_RATE,
+			SAMPLE_SIZE_IN_BITS, CHANNELS, FRAME_SIZE, SAMPLE_RATE, IS_BIG_ENDIAN);
 
 	private double ditDurationSeconds = 0.0;
 	private Clip ditClip = null;
@@ -214,7 +214,7 @@ public class ClipGenerator {
 	}
 
 	private byte[] createSilence(final double durationSeconds) {
-		return new byte[(int) (ClipGenerator.SAMPLE_RATE * durationSeconds)];
+		return new byte[(int) (ClipGenerator.SAMPLE_RATE * durationSeconds) * 2];
 	}
 
 	private byte[] createPulse(final double durationSeconds) {
@@ -234,27 +234,34 @@ public class ClipGenerator {
 		// should probably be based on the sample rate? 8 sounds good at 20WPM.
 		final int rampSamples = (int) (ClipGenerator.SAMPLE_RATE * rampDurationSeconds);
 		final float dRampSamples = rampSamples;
-		for (int i = 0; i < rampSamples; i++) {
-			out[i] *= (i / dRampSamples);
+		for (int i = 0, j = 0; i < rampSamples; i++, j += 2) {
+			scaleBy(out, j, i / dRampSamples);
 		}
-		for (int i = (rampSamples - 1); i >= 0; i--) {
-			final int idx = samples - i - 1;
-			out[idx] *= (i / dRampSamples);
+		for (int i = (rampSamples - 1), j = (samples - rampSamples) << 1; i >= 0; i --, j += 2) {
+			scaleBy(out, j, i / dRampSamples);
 		}
 	}
 
-	private byte[] createSine(final int samples, final int freqHz) {
-		final int cycleLength = ClipGenerator.SAMPLE_RATE / freqHz;
-		final double dCycleLength = cycleLength;
+	private void scaleBy(final byte[] out, final int idx, final float scale) {
+		short samp = (short)(out[idx] & 0x00ff);
+		samp <<= 8;
+		samp |= (out[idx + 1] & 0x00ff);
+		samp *= scale;
+		out[idx] = (byte) ((samp & 0xff00) >> 8);
+		out[idx + 1] = (byte) (samp & 0x00ff);
+	}
 
-		final byte[] out = new byte[samples];
-		for (int i = 0; i < samples; i++) {
-			final int x = i % cycleLength;
-			final double prop = x / dCycleLength;
-			final double sinprop = prop * ClipGenerator.TWO_PI;
-			final double value = Math.sin(sinprop);
-			final int iVal = (int) (value * 127) + 256;
-			out[i] = (byte) (iVal & 0xff);
+	private byte[] createSine(final int samples, final int freqHz) {
+		final double cycleLength = ClipGenerator.SAMPLE_RATE / freqHz;
+
+		final int twoSamples = samples * 2;
+		final byte[] out = new byte[twoSamples];
+		for (int j = 0, i = 0; i < twoSamples; i += 2, j++) {
+			final double prop = ((j % cycleLength) / cycleLength) * ClipGenerator.TWO_PI;
+			final double value = Math.sin(prop);
+			final int iVal = (int) (value * 32767) + 65536;
+			out[i] = (byte) ((iVal & 0xff00) >> 8);
+			out[i + 1] = (byte) (iVal & 0x00ff);
 		}
 		return out;
 	}

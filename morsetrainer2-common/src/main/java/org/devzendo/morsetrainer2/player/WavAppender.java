@@ -48,7 +48,8 @@ public class WavAppender {
 		putLE(RIFF_CHUNK_ID, 0, 4);
 		// Calculate the chunk sizes
 
-		final int blockAlign = (format.getSampleSizeInBits()/8) * format.getChannels();
+		final int sampleSizeInBits = format.getSampleSizeInBits();
+		final int blockAlign = (sampleSizeInBits/8) * format.getChannels();
 		System.out.println("blockAlign is " + blockAlign);
 		System.out.println("sample size is " + format.getSampleSizeInBits());
 		System.out.println("channels is " + format.getChannels());
