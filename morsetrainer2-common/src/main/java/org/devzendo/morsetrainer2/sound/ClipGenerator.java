@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ClipGenerator {
-	private static final boolean IS_BIG_ENDIAN = true;
+	private static final boolean IS_BIG_ENDIAN = false;
 	private static final int CHANNELS = 1;
 	private static final int SAMPLE_SIZE_IN_BITS = 16;
 	private static final int FRAME_SIZE = 2;
@@ -243,12 +243,12 @@ public class ClipGenerator {
 	}
 
 	private void scaleBy(final byte[] out, final int idx, final float scale) {
-		short samp = (short)(out[idx] & 0x00ff);
+		short samp = (short)(out[idx + 1] & 0x00ff);
 		samp <<= 8;
-		samp |= (out[idx + 1] & 0x00ff);
+		samp |= (out[idx] & 0x00ff);
 		samp *= scale;
-		out[idx] = (byte) ((samp & 0xff00) >> 8);
-		out[idx + 1] = (byte) (samp & 0x00ff);
+		out[idx + 1] = (byte) ((samp & 0xff00) >> 8);
+		out[idx] = (byte) (samp & 0x00ff);
 	}
 
 	private byte[] createSine(final int samples, final int freqHz) {
@@ -260,8 +260,8 @@ public class ClipGenerator {
 			final double prop = ((j % cycleLength) / cycleLength) * ClipGenerator.TWO_PI;
 			final double value = Math.sin(prop);
 			final int iVal = (int) (value * 32767) + 65536;
-			out[i] = (byte) ((iVal & 0xff00) >> 8);
-			out[i + 1] = (byte) (iVal & 0x00ff);
+			out[i + 1] = (byte) ((iVal & 0xff00) >> 8);
+			out[i] = (byte) (iVal & 0x00ff);
 		}
 		return out;
 	}

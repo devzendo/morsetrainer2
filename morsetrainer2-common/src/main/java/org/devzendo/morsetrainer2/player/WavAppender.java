@@ -50,9 +50,6 @@ public class WavAppender {
 
 		final int sampleSizeInBits = format.getSampleSizeInBits();
 		final int blockAlign = (sampleSizeInBits/8) * format.getChannels();
-		System.out.println("blockAlign is " + blockAlign);
-		System.out.println("sample size is " + format.getSampleSizeInBits());
-		System.out.println("channels is " + format.getChannels());
 		// 2 bytes unsigned, 0x0001 (1) to 0xFFFF (65,535)
 
 		final long dataChunkSize = blockAlign * numFrames;
@@ -109,7 +106,6 @@ public class WavAppender {
 		// precondition: after initial open, we've written the header once, so are ready to append the raw waveform.
 		randomAccessFile.write(waveform);
 		numFrames += waveform.length;
-		System.out.println("numframes is " + numFrames);
 	}
 
 	public void close() throws IOException {
