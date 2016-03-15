@@ -49,6 +49,6 @@ public class PartyMorseCharacterIteratorFactory {
 			throw new IllegalArgumentException("No value of source or play");
 		}
 
-		return new RandomGroupingIterator(length, sourceChars.toArray(new MorseCharacter[0]));
+		return new RandomGroupingSetIterator(length, sourceChars.toArray(new MorseCharacter[0]));
 	}
 }

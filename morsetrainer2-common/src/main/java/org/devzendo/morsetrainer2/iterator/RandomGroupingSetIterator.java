@@ -6,13 +6,13 @@ import java.util.Optional;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 
-public class RandomGroupingIterator implements PartyMorseCharacterIterator {
+public class RandomGroupingSetIterator implements PartyMorseCharacterIterator {
 	private final Optional<Integer> length;
 	private final MorseCharacter[] sourceSetArray;
 	private int groupNumber;
 	private LinkedList<PartyMorseCharacter> group;
 
-	public RandomGroupingIterator(final Optional<Integer> length, final MorseCharacter[] sourceSetArray) {
+	public RandomGroupingSetIterator(final Optional<Integer> length, final MorseCharacter[] sourceSetArray) {
 		if (sourceSetArray == null || sourceSetArray.length == 0) {
 			throw new IllegalArgumentException("Source set array cannot be null or empty");
 		}
