@@ -58,7 +58,7 @@ public class Main {
 
 			final CallsignGenerator callsignGenerator = new CallsignGenerator();
 			final QSOGenerator qsoGenerator = new QSOGenerator(callsignGenerator);
-			final PartyMorseCharacterIterator it = new PartyMorseCharacterIteratorFactory(options.length, options.source, options.play, options.sourceString, callsignGenerator, qsoGenerator).create();
+			final PartyMorseCharacterIterator it = new PartyMorseCharacterIteratorFactory(options.length, options.source, options.sourceChars, options.play, options.playString, callsignGenerator, qsoGenerator).create();
 
 			final Player player = PlayerFactory.createPlayer(options.freqHz, options.wpm, options.fwpm, options.recordFile);
 			final Controller ctrl = ControllerFactory.createController(options.interactive, it, player, statsStore);

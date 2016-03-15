@@ -56,19 +56,21 @@ public class CommandLineParser {
 				break;
 
 			case "-source":
-				options.source = nextSourceArg();
-				switch (options.source.get()) {
+				final Optional<SourceType> source = nextSourceArg();
+				final SourceType sourceType = source.get();
+				switch (sourceType) {
 				case All:
 				case Letters:
 				case Numbers:
 				case Prosigns:
 				case Punctuation:
-					options.sourceString = options.source.get().content();
+					options.source.add(sourceType);
 					break;
 				case Set:
+					options.source.add(sourceType);
 					if (hasNextArg()) {
 						final String setString = nextArg();
-						options.sourceString = TextToMorseCharacterParser.parseToString(setString);
+						options.sourceChars.addAll(TextToMorseCharacterParser.parseToSet(setString));
 					} else {
 						throw new IllegalArgumentException(
 								"-source set must be followed by a string of source characters");
@@ -84,27 +86,27 @@ public class CommandLineParser {
 				switch (options.play.get()) {
 				case File:
 					if (hasNextArg()) {
-						options.sourceString = TextToMorseCharacterParser.parseToString(readFile(new File(nextArg())));
+						options.playString = TextToMorseCharacterParser.parseToString(readFile(new File(nextArg())));
 					} else {
 						throw new IllegalArgumentException("-play file must be followed by a file name");
 					}
 					break;
 				case Stdin:
-					options.sourceString = TextToMorseCharacterParser.parseToString(readStdin());
+					options.playString = TextToMorseCharacterParser.parseToString(readStdin());
 					break;
 				case Text:
 					if (hasNextArg()) {
 						final String textString = nextArg();
-						options.sourceString = TextToMorseCharacterParser.parseToString(textString);
+						options.playString = TextToMorseCharacterParser.parseToString(textString);
 					} else {
 						throw new IllegalArgumentException(
 								"-play text <some text> must be followed by a string to play");
 					}
 					break;
-				// No source string is set for these....
+				// No play string is set for these....
 				case QSO:
 				case Callsigns:
-					options.sourceString = "";
+					options.playString = "";
 					break;
 				default:
 					throw new IllegalArgumentException("-play must be followed by an input type [qso|callsigns|file|stdin|-]");
@@ -169,12 +171,14 @@ public class CommandLineParser {
 		if (options.freqHz == null) {
 			options.freqHz = 600;
 		}
-		if (options.source.isPresent() && options.play.isPresent()) {
+		if (!options.source.isEmpty() && options.play.isPresent()) {
 			throw new IllegalArgumentException("-play ... and -source ... cannot be used together");
 		}
-		if (!options.source.isPresent() && !options.play.isPresent()) {
-			options.source = Optional.of(SourceType.All);
-			options.sourceString = options.source.get().content();
+		if (options.source.isEmpty() && !options.play.isPresent()) {
+			options.source.add(SourceType.All);
+		}
+		if (!options.source.isEmpty() && !options.play.isPresent()) {
+			options.source.forEach(s -> options.sourceChars.addAll(TextToMorseCharacterParser.parseToSet(s.content())));
 		}
 
 		// Final validation

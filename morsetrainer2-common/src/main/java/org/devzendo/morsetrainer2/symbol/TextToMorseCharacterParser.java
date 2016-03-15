@@ -56,6 +56,20 @@ public class TextToMorseCharacterParser implements Iterator<MorseCharacter> {
 	 * @return possibly empty array, never null.
 	 */
 	public static MorseCharacter[] parseToSetAsArray(final String string) {
+		return parseToSet(string).toArray(new MorseCharacter[0]);
+	}
+
+	/**
+	 * Parse any ASCII text, possibly containing <PR> style prosigns to a set
+	 * of MorseCharacters. Unknown characters are omitted; multiple spaces are
+	 * preserved; other white space ignored; duplicates are removed (thus forming
+	 * a set); order is not preserved.
+	 *
+	 * @param string
+	 *            any ASCII text.
+	 * @return possibly empty set, never null.
+	 */
+	public static Set<MorseCharacter> parseToSet(final String string) {
 		LOGGER.debug("Parsing '" + string + "'");
 		final Set<MorseCharacter> set = new HashSet<>();
 
@@ -66,8 +80,7 @@ public class TextToMorseCharacterParser implements Iterator<MorseCharacter> {
 				set.add(parser.next());
 			}
 		}
-
-		return set.toArray(new MorseCharacter[0]);
+		return set;
 	}
 
 	/**
