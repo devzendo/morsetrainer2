@@ -56,18 +56,9 @@ public class CommandLineParser {
 				break;
 
 			case "-source":
-				final Optional<SourceType> source = nextSourceArg();
-				final SourceType sourceType = source.get();
-				switch (sourceType) {
-				case All:
-				case Letters:
-				case Numbers:
-				case Prosigns:
-				case Punctuation:
-					options.source.add(sourceType);
-					break;
-				case Set:
-					options.source.add(sourceType);
+				final SourceType sourceType = nextSourceArg();
+				options.source.add(sourceType);
+				if (sourceType == SourceType.Set) {
 					if (hasNextArg()) {
 						final String setString = nextArg();
 						options.sourceChars.addAll(TextToMorseCharacterParser.parseToSet(setString));
@@ -75,9 +66,6 @@ public class CommandLineParser {
 						throw new IllegalArgumentException(
 								"-source set must be followed by a string of source characters");
 					}
-					break;
-				default:
-					throw new IllegalArgumentException("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set]");
 				}
 				break;
 
@@ -221,11 +209,11 @@ public class CommandLineParser {
 		throw new IllegalArgumentException("-" + name + " must be in the range " + low + " to " + high);
 	}
 
-	private Optional<Source.SourceType> nextSourceArg() {
+	private Source.SourceType nextSourceArg() {
 		if (hasNextArg()) {
 			final Optional<Source.SourceType> out = Source.SourceType.fromString(nextArg());
 			if (out.isPresent()) {
-				return out;
+				return out.get();
 			}
 		}
 		throw new IllegalArgumentException(
