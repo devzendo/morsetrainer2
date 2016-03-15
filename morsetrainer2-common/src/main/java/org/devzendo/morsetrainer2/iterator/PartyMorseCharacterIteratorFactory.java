@@ -1,31 +1,26 @@
 package org.devzendo.morsetrainer2.iterator;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
 import org.devzendo.morsetrainer2.qso.CallsignGenerator;
 import org.devzendo.morsetrainer2.qso.QSOGenerator;
 import org.devzendo.morsetrainer2.source.Source.PlayType;
-import org.devzendo.morsetrainer2.source.Source.SourceType;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
-import org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser;
 
 public class PartyMorseCharacterIteratorFactory {
 
 	private final Optional<Integer> length;
-	private final Set<SourceType> source;
 	private final Set<MorseCharacter> sourceChars;
 	private final CallsignGenerator callsignGenerator;
 	private final QSOGenerator qsoGenerator;
 	private final Optional<PlayType> play;
 	private final String playString;
 
-	public PartyMorseCharacterIteratorFactory(final Optional<Integer> length, final Set<SourceType> source, final Set<MorseCharacter> sourceChars,
+	public PartyMorseCharacterIteratorFactory(final Optional<Integer> length, final Set<MorseCharacter> sourceChars,
 			final Optional<PlayType> play, final String playString, final CallsignGenerator callsignGenerator,
 			final QSOGenerator qsoGenerator) {
 		this.length = length;
-		this.source = source;
 		this.sourceChars = sourceChars;
 		this.play = play;
 		this.playString = playString;
@@ -50,12 +45,10 @@ public class PartyMorseCharacterIteratorFactory {
 			}
 		}
 
-		if (source.isEmpty()) {
+		if (sourceChars.isEmpty()) {
 			throw new IllegalArgumentException("No value of source or play");
 		}
 
-		final Set<MorseCharacter> charSet = new HashSet<>(sourceChars);
-		source.forEach(s -> charSet.addAll(TextToMorseCharacterParser.parseToSet(s.content())));
-		return new RandomGroupingIterator(length, charSet.toArray(new MorseCharacter[0]));
+		return new RandomGroupingIterator(length, sourceChars.toArray(new MorseCharacter[0]));
 	}
 }
