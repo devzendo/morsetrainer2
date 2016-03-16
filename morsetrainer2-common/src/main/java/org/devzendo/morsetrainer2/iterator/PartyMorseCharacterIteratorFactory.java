@@ -7,6 +7,7 @@ import org.devzendo.morsetrainer2.qso.CallsignGenerator;
 import org.devzendo.morsetrainer2.qso.QSOGenerator;
 import org.devzendo.morsetrainer2.source.Source.PlayType;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
+import org.devzendo.morsetrainer2.symbol.MorseWordResourceLoader;
 
 public class PartyMorseCharacterIteratorFactory {
 
@@ -40,6 +41,8 @@ public class PartyMorseCharacterIteratorFactory {
 				return qsoGenerator.iterator();
 			case Callsigns:
 				return callsignGenerator.iterator();
+			case Codes:
+				return new RandomGroupingWordIterator(length, MorseWordResourceLoader.wordsFromResource("codes.txt"));
 			default:
 				throw new IllegalArgumentException("Unknown value of play: " + play);
 			}
@@ -51,4 +54,5 @@ public class PartyMorseCharacterIteratorFactory {
 
 		return new RandomGroupingSetIterator(length, sourceChars.toArray(new MorseCharacter[0]));
 	}
+
 }

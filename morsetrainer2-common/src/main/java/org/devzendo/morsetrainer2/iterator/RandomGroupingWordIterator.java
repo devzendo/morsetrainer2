@@ -1,17 +1,23 @@
 package org.devzendo.morsetrainer2.iterator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 import org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RandomGroupingWordIterator implements PartyMorseCharacterIterator {
+	private static Logger LOGGER = LoggerFactory.getLogger(RandomGroupingWordIterator.class);
+
 	private final Optional<Integer> length;
 	private int groupNumber;
 	private LinkedList<PartyMorseCharacter> group;
@@ -25,6 +31,11 @@ public class RandomGroupingWordIterator implements PartyMorseCharacterIterator {
 		this.length = length;
 		lengthMap = initialiseLengthMap(sourceWordList);
 		lengths = lengthMap.keySet().toArray(new Integer[0]);
+
+		if (LOGGER.isDebugEnabled()) {
+			final List<String> lenStrings = Arrays.asList(lengths).stream().map(i -> i + "").collect(Collectors.toList());
+			LOGGER.debug("Available lengths: " + String.join(" ",  lenStrings));
+		}
 
 		length.ifPresent(i -> {
 			if (!lengthMap.containsKey(i)) throw new IllegalArgumentException("Source word list has no words of length " + i);

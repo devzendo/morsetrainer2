@@ -12,14 +12,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.devzendo.morsetrainer2.logging.LoggingUnittest;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
+import org.devzendo.morsetrainer2.symbol.MorseWordResourceLoader;
 import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 import org.hamcrest.Matchers;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class TestRandomGroupingWordIterator {
+
+	@BeforeClass
+	public static void setupLogging() {
+		LoggingUnittest.initialise();
+	}
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -119,4 +127,8 @@ public class TestRandomGroupingWordIterator {
         assertThat(seen.size(), equalTo(9));
 	}
 
+	@Test
+	public void codesAllOk() throws Exception {
+		new RandomGroupingWordIterator(Optional.empty(), MorseWordResourceLoader.wordsFromResource("codes.txt"));
+	}
 }
