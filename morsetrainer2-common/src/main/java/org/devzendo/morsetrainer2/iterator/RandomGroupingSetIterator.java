@@ -21,7 +21,7 @@ public class RandomGroupingSetIterator implements PartyMorseCharacterIterator {
 		this.groupNumber = 0;
 		this.group = generate(generateGroupSize());
 	}
-	
+
 	LinkedList<PartyMorseCharacter> generate(final int size) {
 		final LinkedList<PartyMorseCharacter> out = new LinkedList<>();
 		for (int i = 0; i < size; i++) {
@@ -31,7 +31,7 @@ public class RandomGroupingSetIterator implements PartyMorseCharacterIterator {
 	}
 
 	int generateGroupSize() {
-		return length.isPresent() ? length.get() : ((int)(Math.random() * 9) + 1); 
+		return length.isPresent() ? length.get() : ((int)(Math.random() * 9) + 1);
 	}
 
 	@Override
