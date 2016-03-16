@@ -9,7 +9,8 @@ public class Source {
 		QSO,
 		File,
 		Stdin,
-		Text;
+		Text,
+		Codes;
 
 		public static Optional<PlayType> fromString(final String anyString) {
 			if (anyString == null) {

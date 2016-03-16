@@ -94,6 +94,7 @@ public class CommandLineParser {
 				// No play string is set for these....
 				case QSO:
 				case Callsigns:
+				case Codes:
 					options.playString = "";
 					break;
 				default:
@@ -228,7 +229,7 @@ public class CommandLineParser {
 			}
 		}
 		throw new IllegalArgumentException(
-				"-play must be followed by an input type [qso|callsigns|file|stdin|-]");
+				"-play must be followed by an input type [codes|qso|callsigns|file|stdin|-]");
 	}
 
 	private String readFile(final File file) {
@@ -304,13 +305,15 @@ public class CommandLineParser {
 		println("                        characters specified.");
 		println("                        Default is 'all' if not given.");
 		println("@|bold Play (text to play/generate):|@");
-		println("@|green -play [stdin|-|file|callsigns|qso|text]|@");
+		println("@|green -play [stdin|-|file|callsigns|qso|text|codes]|@");
 		println("@|green -play stdin   or  -play -|@");
 		println("                      - Play the text from standard input.");
 		println("@|green -play file <filename>|@");
 		println("                      - Play the text read from a file.");
 		println("@|green -play text <some text>|@");
 		println("                      - Play the text in the next argument (beware quoting).");
+		println("@|green -play codes|@");
+		println("                      - Play random Q-codes and other abbreviations.");
 		println("");
 		println("@|bold -? or -help or -usage|@ - Show this usage summary");
 		println("@|bold -version|@              - Show MorseTrainer2 version number");

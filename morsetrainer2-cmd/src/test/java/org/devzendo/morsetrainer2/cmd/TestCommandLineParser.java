@@ -188,14 +188,14 @@ public class TestCommandLineParser {
 	public void callsignsPlay() throws Exception {
 		final Options options = construct("-play", "Callsigns").getOptions();
 		assertThat(options.play, equalTo(Optional.of(Source.PlayType.Callsigns)));
-		// can't test source string, it's random
+		// can't test play string, it's random
 	}
 
 	@Test
 	public void qsoPlay() throws Exception {
 		final Options options = construct("-play", "QSO").getOptions();
 		assertThat(options.play, equalTo(Optional.of(Source.PlayType.QSO)));
-		// can't test source string, it's random
+		// can't test play string, it's random
 	}
 
 	@Test
@@ -263,12 +263,12 @@ public class TestCommandLineParser {
 
 	@Test
 	public void unknownPlay() throws Exception {
-		constructWithFailure("-play must be followed by an input type [qso|callsigns|file|stdin|-]", "-play", "zarjaz");
+		constructWithFailure("-play must be followed by an input type [codes|qso|callsigns|file|stdin|-]", "-play", "zarjaz");
 	}
 
 	@Test
 	public void emptyPlay() throws Exception {
-		constructWithFailure("-play must be followed by an input type [qso|callsigns|file|stdin|-]", "-play");
+		constructWithFailure("-play must be followed by an input type [codes|qso|callsigns|file|stdin|-]", "-play");
 	}
 
 	@Test
@@ -380,6 +380,14 @@ public class TestCommandLineParser {
 		assertThat(options.source, empty());
 		assertThat(options.play, equalTo(Optional.of(PlayType.Text)));
 		assertThat(options.playString, equalTo("1 HOOPY  FROOD <KN>"));
+	}
+
+	@Test
+	public void codesPlay() throws Exception {
+		final Options options = construct("-play", "codes").getOptions();
+		assertThat(options.source, empty());
+		assertThat(options.play, equalTo(Optional.of(PlayType.Codes)));
+		assertThat(options.playString, equalTo(""));
 	}
 
 	@Test
