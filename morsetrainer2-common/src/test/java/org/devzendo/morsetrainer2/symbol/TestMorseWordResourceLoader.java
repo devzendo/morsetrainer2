@@ -34,9 +34,9 @@ public class TestMorseWordResourceLoader {
 		for (final String word : words) {
 			LOGGER.debug("Word '{}'", word);
 		}
-		final List<String> firstExpectedWords = asList("AA", "AB", "ARRL", "ABT", "ADR", "AGN", "ANT", "ARND", "BCI"); // etc., etc.
+		final List<String> firstExpectedWords = asList("AA", "AB", "ARRL", "ABT", "ADR", "AGN", "AM", "ANT", "ARND", "BCI"); // etc., etc.
 		final List<String> firstReturnedWords = words.subList(0, firstExpectedWords.size());
 		assertThat(firstReturnedWords, equalTo(firstExpectedWords));
-		assertThat(words, Matchers.hasSize(148));
+		assertThat(words, Matchers.hasSize(206));
 	}
 }
