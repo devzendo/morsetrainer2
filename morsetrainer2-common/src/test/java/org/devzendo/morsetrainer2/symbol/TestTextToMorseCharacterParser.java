@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasToString;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class TestTextToMorseCharacterParser {
 		assertThat(parse("ab c"), equalTo(
 				new MorseCharacter[] { MorseCharacter.A, MorseCharacter.B, MorseCharacter.SPC, MorseCharacter.C }));
 	}
-	
+
 	@Test
 	public void spacesAreNotCoalesced() {
 		assertThat(parse("  "),
@@ -88,7 +89,7 @@ public class TestTextToMorseCharacterParser {
 	public void initiallyHasNothing() {
 		assertThat(parser.hasNext(), equalTo(false));
 	}
-	
+
 	@Test
 	public void goodCharacterIsImmediatelyAvailable() {
 		parser.addString("a");
@@ -104,7 +105,7 @@ public class TestTextToMorseCharacterParser {
 		assertThat(parser.next(), equalTo(MorseCharacter.COMMA));
 		assertThat(parser.hasNext(), equalTo(false));
 	}
-	
+
 	@Test
 	public void fragmentedProsignIsNotImmediatelyAvailable() {
 		parser.addString("<");
@@ -117,5 +118,22 @@ public class TestTextToMorseCharacterParser {
 		assertThat(parser.hasNext(), equalTo(true));
 		assertThat(parser.next(), equalTo(MorseCharacter.CL));
 		assertThat(parser.hasNext(), equalTo(false));
+	}
+
+	@Test
+	public void testMultipleEmptyStringParsing() throws Exception {
+		final List<MorseWord> list = TextToMorseCharacterParser.parseMultipleToList("");
+		assertThat(list, hasSize(1));
+		assertThat(list.get(0).size(), equalTo(0));
+	}
+
+	@Test
+	public void testMultipleParsing() throws Exception {
+		final List<MorseWord> list = TextToMorseCharacterParser.parseMultipleToList("one", "four");
+		assertThat(list, hasSize(2));
+		final MorseWord one = list.get(0);
+		assertThat(one, hasToString("ONE"));
+		final MorseWord four = list.get(1);
+		assertThat(four, hasToString("FOUR"));
 	}
 }

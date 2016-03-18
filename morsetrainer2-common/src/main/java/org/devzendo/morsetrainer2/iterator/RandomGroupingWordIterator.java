@@ -1,5 +1,8 @@
 package org.devzendo.morsetrainer2.iterator;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.joining;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,8 +13,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
+import org.devzendo.morsetrainer2.symbol.MorseWord;
 import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
-import org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,10 +24,10 @@ public class RandomGroupingWordIterator implements PartyMorseCharacterIterator {
 	private final Optional<Integer> length;
 	private int groupNumber;
 	private LinkedList<PartyMorseCharacter> group;
-	private final Map<Integer, ArrayList<MorseCharacter[]>> lengthMap;
+	private final Map<Integer, ArrayList<MorseWord>> lengthMap;
 	private final Integer[] lengths;
 
-	public RandomGroupingWordIterator(final Optional<Integer> length, final List<String> sourceWordList) {
+	public RandomGroupingWordIterator(final Optional<Integer> length, final List<MorseWord> sourceWordList) {
 		if (sourceWordList == null || sourceWordList.isEmpty()) {
 			throw new IllegalArgumentException("Source word list cannot be null or empty");
 		}
@@ -49,29 +52,28 @@ public class RandomGroupingWordIterator implements PartyMorseCharacterIterator {
 		this.group = generate(generateGroupSize());
 	}
 
-	private Map<Integer, ArrayList<MorseCharacter[]>> initialiseLengthMap(final List<String> sourceWordList) {
-		final Map<Integer, ArrayList<MorseCharacter[]>> lengthMap = new HashMap<>();
+	private Map<Integer, ArrayList<MorseWord>> initialiseLengthMap(final List<MorseWord> sourceWordList) {
+		final Map<Integer, ArrayList<MorseWord>> lengthMap = new HashMap<>();
 		sourceWordList.forEach(w -> {
-			if (w.length() <= 0 || w.length() >= 10) {
-				throw new IllegalArgumentException("Word '" + w + "' is of an incorrect length");
+			if (w.size() <= 0 || w.size() >= 10) {
+				final String word = asList(w).stream().map(mcc -> mcc.toString()).collect(joining());
+				throw new IllegalArgumentException("Word '" + word + "' is of an incorrect length");
 			}
-			final MorseCharacter[] wordMorseChars = TextToMorseCharacterParser.parse(w);
-			final int len = wordMorseChars.length;
-			if (!lengthMap.containsKey(len)) {
-				lengthMap.put(len, new ArrayList<MorseCharacter[]>());
+			if (!lengthMap.containsKey(w.size())) {
+				lengthMap.put(w.size(), new ArrayList<MorseWord>());
 			}
-			final ArrayList<MorseCharacter[]> lenList = lengthMap.get(len);
-			lenList.add(wordMorseChars);
+			final ArrayList<MorseWord> lenList = lengthMap.get(w.size());
+			lenList.add(w);
 		});
 		return lengthMap;
 	}
 
 	LinkedList<PartyMorseCharacter> generate(final int size) {
-		final ArrayList<MorseCharacter[]> wordArrayList = lengthMap.get(size);
-		final MorseCharacter[] word = wordArrayList.get((int)(Math.random() * wordArrayList.size()));
+		final ArrayList<MorseWord> wordArrayList = lengthMap.get(size);
+		final MorseWord word = wordArrayList.get((int)(Math.random() * wordArrayList.size()));
 		final LinkedList<PartyMorseCharacter> out = new LinkedList<>();
 		for (int i = 0; i < size; i++) {
-			out.add(new PartyMorseCharacter(0, word[i]));
+			out.add(new PartyMorseCharacter(0, word.get(i)));
 		}
 		return out;
 	}

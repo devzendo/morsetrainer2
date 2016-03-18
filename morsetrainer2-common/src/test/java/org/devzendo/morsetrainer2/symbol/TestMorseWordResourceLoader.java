@@ -1,6 +1,6 @@
 package org.devzendo.morsetrainer2.symbol;
 
-import static java.util.Arrays.asList;
+import static org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser.parseMultipleToList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -24,18 +24,18 @@ public class TestMorseWordResourceLoader {
 
 	@Test
 	public void resourceFileCanBeLoaded() {
-		final List<String> words = MorseWordResourceLoader.wordsFromResource("testfile.txt");
-		assertThat(words, equalTo(asList("THIS", "IS", "A", "TEST")));
+		final List<MorseWord> words = MorseWordResourceLoader.wordsFromResource("testfile.txt");
+		assertThat(words, equalTo(parseMultipleToList("THIS", "IS", "A", "TEST")));
 	}
 
 	@Test
 	public void codesCanBeLoaded() throws Exception {
-		final List<String> words = MorseWordResourceLoader.wordsFromResource("codes.txt");
-		for (final String word : words) {
+		final List<MorseWord> words = MorseWordResourceLoader.wordsFromResource("codes.txt");
+		for (final MorseWord word : words) {
 			LOGGER.debug("Word '{}'", word);
 		}
-		final List<String> firstExpectedWords = asList("AA", "AB", "ARRL", "ABT", "ADR", "AGN", "AM", "ANT", "ARND", "BCI"); // etc., etc.
-		final List<String> firstReturnedWords = words.subList(0, firstExpectedWords.size());
+		final List<MorseWord> firstExpectedWords = parseMultipleToList("AA", "AB", "ARRL", "ABT", "ADR", "AGN", "AM", "ANT", "ARND", "BCI"); // etc., etc.
+		final List<MorseWord> firstReturnedWords = words.subList(0, firstExpectedWords.size());
 		assertThat(firstReturnedWords, equalTo(firstExpectedWords));
 		assertThat(words, Matchers.hasSize(206));
 	}

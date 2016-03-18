@@ -1,7 +1,7 @@
 package org.devzendo.morsetrainer2.iterator;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser.parseMultipleToList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.devzendo.morsetrainer2.logging.LoggingUnittest;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
+import org.devzendo.morsetrainer2.symbol.MorseWord;
 import org.devzendo.morsetrainer2.symbol.MorseWordResourceLoader;
 import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 import org.hamcrest.Matchers;
@@ -46,24 +47,24 @@ public class TestRandomGroupingWordIterator {
 	public void sourceWordListHasNothingOfSpecifiedLength() throws Exception {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Source word list has no words of length 3");
-        new RandomGroupingWordIterator(Optional.of(3), asList("A", "ZZZZ", "FF"));
+        new RandomGroupingWordIterator(Optional.of(3), parseMultipleToList("A", "ZZZZ", "FF"));
 	}
 
 	@Test
 	public void zeroLengthWordNotAllowed() throws Exception {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Word '' is of an incorrect length");
-        new RandomGroupingWordIterator(Optional.of(3), asList(""));
+        new RandomGroupingWordIterator(Optional.of(3), parseMultipleToList(""));
 	}
 
 	@Test
 	public void tenLengthWordNotAllowed() throws Exception {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Word 'ABCDEFGHIJ' is of an incorrect length");
-        new RandomGroupingWordIterator(Optional.of(3), asList("ABCDEFGHIJ"));
+        new RandomGroupingWordIterator(Optional.of(3), parseMultipleToList("ABCDEFGHIJ"));
 	}
 
-	private void constructWithBadSourceWordList(final List<String> sourceWordList) {
+	private void constructWithBadSourceWordList(final List<MorseWord> sourceWordList) {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Source word list cannot be null or empty");
         new RandomGroupingWordIterator(Optional.of(3), sourceWordList);
@@ -71,7 +72,7 @@ public class TestRandomGroupingWordIterator {
 
 	@Test
 	public void getSomeFixedLengthWords() throws Exception {
-        final RandomGroupingWordIterator it = new RandomGroupingWordIterator(Optional.of(3), asList("A", "BB", "CCC", "xxx", "yyy", "zzz", "DDDD", "EEEEE"));
+        final RandomGroupingWordIterator it = new RandomGroupingWordIterator(Optional.of(3), parseMultipleToList("A", "BB", "CCC", "xxx", "yyy", "zzz", "DDDD", "EEEEE"));
         for (int i = 0; i < 25; i++ ) {
         	final Set<PartyMorseCharacter> all = new HashSet<>();
         	for (int j = 0; j < 3; j++ ) {
@@ -92,7 +93,7 @@ public class TestRandomGroupingWordIterator {
 
 	@Test
 	public void getSomeRandomLengthWords() throws Exception {
-        final RandomGroupingWordIterator it = new RandomGroupingWordIterator(Optional.empty(), asList("1", "22", "333", "4444", "55555", "666666", "7777777", "88888888", "999999999"));
+        final RandomGroupingWordIterator it = new RandomGroupingWordIterator(Optional.empty(), parseMultipleToList("1", "22", "333", "4444", "55555", "666666", "7777777", "88888888", "999999999"));
     	final Set<Integer> seen = new HashSet<>();
     	boolean seenSpaces = false;
         while (it.hasNext()) {
@@ -111,7 +112,7 @@ public class TestRandomGroupingWordIterator {
 
 	@Test
 	public void seenAllRandomLengthWords() throws Exception {
-        final RandomGroupingWordIterator it = new RandomGroupingWordIterator(Optional.empty(), asList("1", "22", "333", "4444", "55555", "666666", "7777777", "88888888", "999999999"));
+        final RandomGroupingWordIterator it = new RandomGroupingWordIterator(Optional.empty(), parseMultipleToList("1", "22", "333", "4444", "55555", "666666", "7777777", "88888888", "999999999"));
     	final Set<Integer> seen = new HashSet<>();
     	for (int i = 0; i < 100; i++ ) {
     		it.reset();

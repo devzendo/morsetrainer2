@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.devzendo.commoncode.resource.ResourceLoader;
 import org.slf4j.Logger;
@@ -14,28 +15,35 @@ public class MorseWordResourceLoader {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(MorseWordResourceLoader.class);
 
-	public static List<String> wordsFromResource(final String resourcePath) {
-		final List<String> words = new ArrayList<>();
+	public static List<MorseWord> wordsFromResource(final String resourcePath) {
+		final List<MorseWord> words = new ArrayList<>();
 		final TextToMorseCharacterParser parser = parseResource(resourcePath);
-		StringBuilder sb = new StringBuilder();
+		ArrayList<MorseCharacter> mcs = new ArrayList<>();
 		while (parser.hasNext()) {
 			final MorseCharacter mc = parser.next();
 			if (mc == MorseCharacter.SPC) {
-				if (sb.length() > 0) {
-					final String word = sb.toString();
-					LOGGER.debug("Adding word '{}'", word);
-					words.add(word);
+				if (mcs.size() > 0) {
+					debugLogWord(mcs);
+					words.add(new MorseWord(mcs));
 				}
-				sb = new StringBuilder();
+				mcs = new ArrayList<MorseCharacter>();
 			} else {
-				sb.append(mc.toString());
+				mcs.add(mc);
 			}
 		}
-		if (sb.length() > 0) {
-			words.add(sb.toString());
+		if (mcs.size() > 0) {
+			debugLogWord(mcs);
+			words.add(new MorseWord(mcs));
 		}
 		LOGGER.debug("Returning {} words", words.size());
 		return words;
+	}
+
+	private static void debugLogWord(final ArrayList<MorseCharacter> sb) {
+		if (LOGGER.isDebugEnabled()) {
+			final String word = sb.stream().map(mcc -> mcc.toString()).collect(Collectors.joining());
+			LOGGER.debug("Adding word '{}'", word);
+		}
 	}
 
 	private static TextToMorseCharacterParser parseResource(final String resourcePath) {

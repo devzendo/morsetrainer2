@@ -1,5 +1,8 @@
 package org.devzendo.morsetrainer2.symbol;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.joining;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -85,6 +88,10 @@ public enum MorseCharacter {
 			}
 		}
 	};
+
+	public static String arrayToString(final MorseCharacter ... mcs) {
+		return asList(mcs).stream().map(mc -> mc.toString()).collect(joining());
+	}
 
 	public static MorseCharacter[] allocate(final int n) {
 		return new MorseCharacter[n];

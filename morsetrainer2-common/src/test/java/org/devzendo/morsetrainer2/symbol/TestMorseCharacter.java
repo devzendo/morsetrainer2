@@ -43,7 +43,7 @@ public class TestMorseCharacter {
 		assertThat(MorseCharacter.KN.getPulses(), equalTo(new Pulse[] {Pulse.dah, Pulse.dit, Pulse.dah, Pulse.dah, Pulse.dit}));
 		assertThat(MorseCharacter.A.getPulses(), equalTo(new Pulse[] {Pulse.dit, Pulse.dah}));
 	}
-	
+
 	@Test
 	public void testValidFromChar() {
 		assertThat(MorseCharacter.fromChar('a'), equalTo(Optional.of(MorseCharacter.A)));
@@ -65,12 +65,17 @@ public class TestMorseCharacter {
 	public void testValidFromProsignText() {
 		assertThat(MorseCharacter.fromProsignText("<KN>"), equalTo(Optional.empty()));
 		// yes, fromProsignText does not use < >, just text in between them
-		
+
 		assertThat(MorseCharacter.fromProsignText("KN"), equalTo(Optional.of(MorseCharacter.KN)));
 		assertThat(MorseCharacter.fromProsignText("kn"), equalTo(Optional.of(MorseCharacter.KN)));
 		assertThat(MorseCharacter.fromProsignText("qz"), equalTo(Optional.empty()));
 		assertThat(MorseCharacter.fromProsignText("k"), equalTo(Optional.empty()));
 		assertThat(MorseCharacter.fromProsignText(""), equalTo(Optional.empty()));
 		assertThat(MorseCharacter.fromProsignText(null), equalTo(Optional.empty()));
+	}
+
+	@Test
+	public void testArrayToString() throws Exception {
+		assertThat(MorseCharacter.arrayToString(MorseCharacter.A, MorseCharacter.B, MorseCharacter.C), equalTo("ABC"));
 	}
 }

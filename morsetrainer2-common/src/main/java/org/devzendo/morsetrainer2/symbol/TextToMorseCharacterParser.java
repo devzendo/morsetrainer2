@@ -139,6 +139,19 @@ public class TextToMorseCharacterParser implements Iterator<MorseCharacter> {
 		return sb.toString();
 	}
 
+	/**
+	 * Parse an array of strings into a list of MorseCharacter[].
+	 * @param strings any set of strings
+	 * @return a list, never empty
+	 */
+	public static List<MorseWord> parseMultipleToList(final String ... strings) {
+		final List<MorseWord> list = new ArrayList<>();
+		for (final String s : strings) {
+			list.add(new MorseWord(TextToMorseCharacterParser.parse(s)));
+		}
+		return list;
+	}
+
 	private final LinkedList<Character> inputText = new LinkedList<>();
 	private MorseCharacter store = null;
 	private boolean inProsignScan = false;
