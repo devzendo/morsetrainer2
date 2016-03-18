@@ -15,6 +15,7 @@ import java.util.Properties;
 
 import org.devzendo.morsetrainer2.source.Source;
 import org.devzendo.morsetrainer2.source.Source.SourceType;
+import org.devzendo.morsetrainer2.symbol.MorseWordResourceLoader;
 import org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,14 +59,20 @@ public class CommandLineParser {
 			case "-source":
 				final SourceType sourceType = nextSourceArg();
 				options.source.add(sourceType);
-				if (sourceType == SourceType.Set) {
-					if (hasNextArg()) {
-						final String setString = nextArg();
-						options.sourceChars.addAll(TextToMorseCharacterParser.parseToSet(setString));
-					} else {
-						throw new IllegalArgumentException(
-								"-source set must be followed by a string of source characters");
-					}
+				switch (sourceType) {
+					case Set:
+						if (hasNextArg()) {
+							final String setString = nextArg();
+							options.sourceChars.addAll(TextToMorseCharacterParser.parseToSet(setString));
+						} else {
+							throw new IllegalArgumentException(
+									"-source set must be followed by a string of source characters");
+						}
+						break;
+					case Codes:
+						options.sourceWords.addAll(MorseWordResourceLoader.wordsFromResource("codes.txt"));
+						break;
+					default:
 				}
 				break;
 
@@ -94,7 +101,6 @@ public class CommandLineParser {
 				// No play string is set for these....
 				case QSO:
 				case Callsigns:
-				case Codes:
 					options.playString = "";
 					break;
 				default:
@@ -174,6 +180,9 @@ public class CommandLineParser {
 		if (options.interactive && options.recordFile.isPresent()) {
 			throw new IllegalArgumentException("-interactive cannot be used with -record");
 		}
+		if (!options.sourceChars.isEmpty() && !options.sourceWords.isEmpty()) {
+			throw new IllegalArgumentException("Cannot mix random word and character generators");
+		}
 
 	}
 
@@ -218,7 +227,7 @@ public class CommandLineParser {
 			}
 		}
 		throw new IllegalArgumentException(
-				"-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set]");
+				"-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes]");
 	}
 
 	private Optional<Source.PlayType> nextPlayArg() {
@@ -229,7 +238,7 @@ public class CommandLineParser {
 			}
 		}
 		throw new IllegalArgumentException(
-				"-play must be followed by an input type [codes|qso|callsigns|file|stdin|-]");
+				"-play must be followed by an input type [qso|callsigns|file|stdin|-]");
 	}
 
 	private String readFile(final File file) {
@@ -304,16 +313,19 @@ public class CommandLineParser {
 		println("                        to send, or with set '...', use the specific");
 		println("                        characters specified.");
 		println("                        Default is 'all' if not given.");
+		println("@|bold Source (set of words to randomise, and train with):|@");
+		println("@|cyan -source [codes]|@");
+		println("@|cyan -source codes|@");
+		println("                      - Play random Q-codes and other abbreviations.");
+		println("");
 		println("@|bold Play (text to play/generate):|@");
-		println("@|green -play [stdin|-|file|callsigns|qso|text|codes]|@");
+		println("@|green -play [stdin|-|file|callsigns|qso|text]|@");
 		println("@|green -play stdin   or  -play -|@");
 		println("                      - Play the text from standard input.");
 		println("@|green -play file <filename>|@");
 		println("                      - Play the text read from a file.");
 		println("@|green -play text <some text>|@");
 		println("                      - Play the text in the next argument (beware quoting).");
-		println("@|green -play codes|@");
-		println("                      - Play random Q-codes and other abbreviations.");
 		println("");
 		println("@|bold -? or -help or -usage|@ - Show this usage summary");
 		println("@|bold -version|@              - Show MorseTrainer2 version number");

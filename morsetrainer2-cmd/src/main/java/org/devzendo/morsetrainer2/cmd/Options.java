@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.devzendo.morsetrainer2.source.Source;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
+import org.devzendo.morsetrainer2.symbol.MorseWord;
 
 public class Options {
 	public Integer wpm;
@@ -15,6 +16,7 @@ public class Options {
 
 	public Set<Source.SourceType> source = new HashSet<>();
 	public Set<MorseCharacter> sourceChars = new HashSet<>();
+	public Set<MorseWord> sourceWords = new HashSet<>();
 
 	public Optional<Source.PlayType> play = Optional.empty();
 	public String playString = "";

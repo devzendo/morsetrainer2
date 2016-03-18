@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
@@ -27,7 +28,7 @@ public class RandomGroupingWordIterator implements PartyMorseCharacterIterator {
 	private final Map<Integer, ArrayList<MorseWord>> lengthMap;
 	private final Integer[] lengths;
 
-	public RandomGroupingWordIterator(final Optional<Integer> length, final List<MorseWord> sourceWordList) {
+	public RandomGroupingWordIterator(final Optional<Integer> length, final Set<MorseWord> sourceWordList) {
 		if (sourceWordList == null || sourceWordList.isEmpty()) {
 			throw new IllegalArgumentException("Source word list cannot be null or empty");
 		}
@@ -52,7 +53,7 @@ public class RandomGroupingWordIterator implements PartyMorseCharacterIterator {
 		this.group = generate(generateGroupSize());
 	}
 
-	private Map<Integer, ArrayList<MorseWord>> initialiseLengthMap(final List<MorseWord> sourceWordList) {
+	private Map<Integer, ArrayList<MorseWord>> initialiseLengthMap(final Set<MorseWord> sourceWordList) {
 		final Map<Integer, ArrayList<MorseWord>> lengthMap = new HashMap<>();
 		sourceWordList.forEach(w -> {
 			if (w.size() <= 0 || w.size() >= 10) {

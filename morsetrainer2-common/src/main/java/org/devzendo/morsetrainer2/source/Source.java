@@ -9,8 +9,7 @@ public class Source {
 		QSO,
 		File,
 		Stdin,
-		Text,
-		Codes;
+		Text;
 
 		public static Optional<PlayType> fromString(final String anyString) {
 			if (anyString == null) {
@@ -35,7 +34,8 @@ public class Source {
 		Numbers(NUMBERS),
 		Punctuation(PUNCTUATION),
 		Prosigns(PROSIGNS),
-		Set("");
+		Set(""),
+		Codes("");
 
 		private final String content;
 		private SourceType(final String content) {

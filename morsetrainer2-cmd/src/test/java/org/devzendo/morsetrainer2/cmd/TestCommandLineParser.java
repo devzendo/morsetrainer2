@@ -1,9 +1,11 @@
 package org.devzendo.morsetrainer2.cmd;
 
+import static java.util.Collections.singleton;
 import static org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser.parseToSet;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
@@ -12,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -137,7 +138,7 @@ public class TestCommandLineParser {
 	@Test
 	public void defaultSourceIsAllWithNoPlay() throws Exception {
 		final Options options = construct().getOptions();
-		assertThat(options.source, equalTo(Collections.singleton(Source.SourceType.All)));
+		assertThat(options.source, equalTo(singleton(Source.SourceType.All)));
 		assertThat(options.sourceChars, equalTo(parseToSet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,./?+=<AR><AS><BK><BT><CL><CQ><HH><KA><KN><NR><SK><VE>")));
 		assertThat(options.play, equalTo(Optional.empty()));
 	}
@@ -145,35 +146,35 @@ public class TestCommandLineParser {
 	@Test
 	public void lettersSource() throws Exception {
 		final Options options = construct("-source", "LeTTeRs").getOptions();
-		assertThat(options.source, equalTo(Collections.singleton(Source.SourceType.Letters)));
+		assertThat(options.source, equalTo(singleton(Source.SourceType.Letters)));
 		assertThat(options.sourceChars, equalTo(parseToSet("ABCDEFGHIJKLMNOPQRSTUVWXYZ")));
 	}
 
 	@Test
 	public void numbersSource() throws Exception {
 		final Options options = construct("-source", "Numbers").getOptions();
-		assertThat(options.source, equalTo(Collections.singleton(Source.SourceType.Numbers)));
+		assertThat(options.source, equalTo(singleton(Source.SourceType.Numbers)));
 		assertThat(options.sourceChars, equalTo(parseToSet("0123456789")));
 	}
 
 	@Test
 	public void punctuationSource() throws Exception {
 		final Options options = construct("-source", "punctuation").getOptions();
-		assertThat(options.source, equalTo(Collections.singleton(Source.SourceType.Punctuation)));
+		assertThat(options.source, equalTo(singleton(Source.SourceType.Punctuation)));
 		assertThat(options.sourceChars, equalTo(parseToSet(",./?+=")));
 	}
 
 	@Test
 	public void prosignsSource() throws Exception {
 		final Options options = construct("-source", "prosigns").getOptions();
-		assertThat(options.source, equalTo(Collections.singleton(Source.SourceType.Prosigns)));
+		assertThat(options.source, equalTo(singleton(Source.SourceType.Prosigns)));
 		assertThat(options.sourceChars, equalTo(parseToSet("<AR><AS><BK><BT><CL><CQ><HH><KA><KN><NR><SK><VE>")));
 	}
 
 	@Test
 	public void setSource() throws Exception {
 		final Options options = construct("-source", "set", "abcz<AR>").getOptions();
-		assertThat(options.source, equalTo(Collections.singleton(Source.SourceType.Set)));
+		assertThat(options.source, equalTo(singleton(Source.SourceType.Set)));
 		assertThat(options.sourceChars, equalTo(parseToSet("ABCZ<AR>")));
 	}
 
@@ -253,22 +254,22 @@ public class TestCommandLineParser {
 
 	@Test
 	public void unknownSource() throws Exception {
-		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set]", "-source", "zarjaz");
+		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes]", "-source", "zarjaz");
 	}
 
 	@Test
 	public void emptySource() throws Exception {
-		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set]", "-source");
+		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes]", "-source");
 	}
 
 	@Test
 	public void unknownPlay() throws Exception {
-		constructWithFailure("-play must be followed by an input type [codes|qso|callsigns|file|stdin|-]", "-play", "zarjaz");
+		constructWithFailure("-play must be followed by an input type [qso|callsigns|file|stdin|-]", "-play", "zarjaz");
 	}
 
 	@Test
 	public void emptyPlay() throws Exception {
-		constructWithFailure("-play must be followed by an input type [codes|qso|callsigns|file|stdin|-]", "-play");
+		constructWithFailure("-play must be followed by an input type [qso|callsigns|file|stdin|-]", "-play");
 	}
 
 	@Test
@@ -371,7 +372,7 @@ public class TestCommandLineParser {
 	public void sourceDoesNotSetPlay() throws Exception {
 		final Options options = construct("-source", "all").getOptions();
 		assertThat(options.play, equalTo(Optional.empty()));
-		assertThat(options.source, equalTo(Collections.singleton(SourceType.All)));
+		assertThat(options.source, equalTo(singleton(SourceType.All)));
 	}
 
 	@Test
@@ -383,11 +384,18 @@ public class TestCommandLineParser {
 	}
 
 	@Test
-	public void codesPlay() throws Exception {
-		final Options options = construct("-play", "codes").getOptions();
-		assertThat(options.source, empty());
-		assertThat(options.play, equalTo(Optional.of(PlayType.Codes)));
+	public void codesSource() throws Exception {
+		final Options options = construct("-source", "codes").getOptions();
+		assertThat(options.source, equalTo(singleton(SourceType.Codes)));
+		assertThat(options.sourceChars, empty());
+		assertThat(options.sourceWords, not(empty()));
+		assertThat(options.play, equalTo(Optional.empty()));
 		assertThat(options.playString, equalTo(""));
+	}
+
+	@Test
+	public void codesSourceAndNonCodesCannotBeUsedTogether() throws Exception {
+		constructWithFailure("Cannot mix random word and character generators", "-source", "codes", "-source", "letters");
 	}
 
 	@Test
