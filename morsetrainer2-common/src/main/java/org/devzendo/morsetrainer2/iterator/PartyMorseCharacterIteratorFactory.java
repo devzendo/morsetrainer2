@@ -6,12 +6,14 @@ import java.util.Set;
 import org.devzendo.morsetrainer2.qso.CallsignGenerator;
 import org.devzendo.morsetrainer2.qso.QSOGenerator;
 import org.devzendo.morsetrainer2.source.Source.PlayType;
+import org.devzendo.morsetrainer2.source.Source.SourceType;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 import org.devzendo.morsetrainer2.symbol.MorseWord;
 
 public class PartyMorseCharacterIteratorFactory {
 
 	private final Optional<Integer> length;
+	private final Set<SourceType> source;
 	private final Set<MorseCharacter> sourceChars;
 	private final Set<MorseWord> sourceWords;
 	private final CallsignGenerator callsignGenerator;
@@ -19,10 +21,11 @@ public class PartyMorseCharacterIteratorFactory {
 	private final Optional<PlayType> play;
 	private final String playString;
 
-	public PartyMorseCharacterIteratorFactory(final Optional<Integer> length, final Set<MorseCharacter> sourceChars,
+	public PartyMorseCharacterIteratorFactory(final Optional<Integer> length, final Set<SourceType> source, final Set<MorseCharacter> sourceChars,
 			final Set<MorseWord> sourceWords, final Optional<PlayType> play, final String playString, final CallsignGenerator callsignGenerator,
 			final QSOGenerator qsoGenerator) {
 		this.length = length;
+		this.source = source;
 		this.sourceChars = sourceChars;
 		this.sourceWords = sourceWords;
 		this.play = play;
@@ -38,11 +41,6 @@ public class PartyMorseCharacterIteratorFactory {
 			case Stdin:
 			case Text:
 				return new VerbatimIterator(playString);
-			// No source string is set for these....
-			case QSO:
-				return qsoGenerator.iterator();
-			case Callsigns:
-				return callsignGenerator.iterator();
 			default:
 				throw new IllegalArgumentException("Unknown value of play: " + play);
 			}
@@ -52,11 +50,17 @@ public class PartyMorseCharacterIteratorFactory {
 			throw new IllegalArgumentException("No value of source or play");
 		}
 
-		if (!sourceWords.isEmpty()) {
-			return new RandomGroupingWordIterator(length, sourceWords);
-		} else {
+		if (source.contains(SourceType.QSO)) {
+			return qsoGenerator.iterator();
+		}
+		if (source.contains(SourceType.Callsigns)) {
+			return callsignGenerator.iterator();
+		}
+
+		if (sourceWords.isEmpty()) {
 			return new RandomGroupingSetIterator(length, sourceChars.toArray(new MorseCharacter[0]));
+		} else {
+			return new RandomGroupingWordIterator(length, sourceWords);
 		}
 	}
-
 }

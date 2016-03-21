@@ -186,17 +186,19 @@ public class TestCommandLineParser {
 	}
 
 	@Test
-	public void callsignsPlay() throws Exception {
-		final Options options = construct("-play", "Callsigns").getOptions();
-		assertThat(options.play, equalTo(Optional.of(Source.PlayType.Callsigns)));
-		// can't test play string, it's random
+	public void callsignsSource() throws Exception {
+		final Options options = construct("-source", "Callsigns").getOptions();
+		assertThat(options.source, equalTo(singleton(Source.SourceType.Callsigns)));
+		assertThat(options.sourceChars, empty());
+		assertThat(options.sourceWords, empty());
 	}
 
 	@Test
-	public void qsoPlay() throws Exception {
-		final Options options = construct("-play", "QSO").getOptions();
-		assertThat(options.play, equalTo(Optional.of(Source.PlayType.QSO)));
-		// can't test play string, it's random
+	public void qsoSource() throws Exception {
+		final Options options = construct("-source", "QSO").getOptions();
+		assertThat(options.source, equalTo(singleton(Source.SourceType.QSO)));
+		assertThat(options.sourceChars, empty());
+		assertThat(options.sourceWords, empty());
 	}
 
 	@Test
@@ -254,22 +256,22 @@ public class TestCommandLineParser {
 
 	@Test
 	public void unknownSource() throws Exception {
-		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes]", "-source", "zarjaz");
+		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes|callsigns|qso]", "-source", "zarjaz");
 	}
 
 	@Test
 	public void emptySource() throws Exception {
-		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes]", "-source");
+		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes|callsigns|qso]", "-source");
 	}
 
 	@Test
 	public void unknownPlay() throws Exception {
-		constructWithFailure("-play must be followed by an input type [qso|callsigns|file|stdin|-]", "-play", "zarjaz");
+		constructWithFailure("-play must be followed by an input type [file|stdin|-]", "-play", "zarjaz");
 	}
 
 	@Test
 	public void emptyPlay() throws Exception {
-		constructWithFailure("-play must be followed by an input type [qso|callsigns|file|stdin|-]", "-play");
+		constructWithFailure("-play must be followed by an input type [file|stdin|-]", "-play");
 	}
 
 	@Test
@@ -394,8 +396,23 @@ public class TestCommandLineParser {
 	}
 
 	@Test
-	public void codesSourceAndNonCodesCannotBeUsedTogether() throws Exception {
+	public void codesSourceAndCharactersCannotBeUsedTogether() throws Exception {
 		constructWithFailure("Cannot mix random word and character generators", "-source", "codes", "-source", "letters");
+	}
+
+	@Test
+	public void callsignsSourceAndCharactersCannotBeUsedTogether() throws Exception {
+		constructWithFailure("Cannot mix random word and character generators", "-source", "callsigns", "-source", "letters");
+	}
+
+	@Test
+	public void qsoSourceAndCharactersCannotBeUsedTogether() throws Exception {
+		constructWithFailure("Cannot mix random word and character generators", "-source", "qso", "-source", "letters");
+	}
+
+	@Test
+	public void multipleWordSourcesCannotBeUsedTogether() throws Exception {
+		constructWithFailure("Cannot mix random word generators", "-source", "qso", "-source", "codes", "-source", "callsigns");
 	}
 
 	@Test

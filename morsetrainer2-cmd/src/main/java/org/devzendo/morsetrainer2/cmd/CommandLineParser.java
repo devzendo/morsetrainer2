@@ -98,13 +98,8 @@ public class CommandLineParser {
 								"-play text <some text> must be followed by a string to play");
 					}
 					break;
-				// No play string is set for these....
-				case QSO:
-				case Callsigns:
-					options.playString = "";
-					break;
 				default:
-					throw new IllegalArgumentException("-play must be followed by an input type [qso|callsigns|file|stdin|-]");
+					throw new IllegalArgumentException("-play must be followed by an input type [file|stdin|-]");
 				}
 				break;
 
@@ -166,6 +161,8 @@ public class CommandLineParser {
 		if (options.freqHz == null) {
 			options.freqHz = 600;
 		}
+
+		// Final validation
 		if (!options.source.isEmpty() && options.play.isPresent()) {
 			throw new IllegalArgumentException("-play ... and -source ... cannot be used together");
 		}
@@ -176,14 +173,34 @@ public class CommandLineParser {
 			options.source.forEach(s -> options.sourceChars.addAll(TextToMorseCharacterParser.parseToSet(s.content())));
 		}
 
-		// Final validation
 		if (options.interactive && options.recordFile.isPresent()) {
 			throw new IllegalArgumentException("-interactive cannot be used with -record");
 		}
-		if (!options.sourceChars.isEmpty() && !options.sourceWords.isEmpty()) {
+
+		if (!options.sourceChars.isEmpty() && (
+				options.source.contains(SourceType.Codes) || options.source.contains(SourceType.QSO) ||
+				options.source.contains(SourceType.Callsigns)
+				)) {
 			throw new IllegalArgumentException("Cannot mix random word and character generators");
 		}
 
+		if (wordSourceCount() > 1) {
+			throw new IllegalArgumentException("Cannot mix random word generators");
+		}
+	}
+
+	private int wordSourceCount() {
+		int wordSourceCount = 0;
+		if (options.source.contains(SourceType.Codes)) {
+			wordSourceCount++;
+		}
+		if (options.source.contains(SourceType.QSO)) {
+			wordSourceCount++;
+		}
+		if (options.source.contains(SourceType.Callsigns)) {
+			wordSourceCount++;
+		}
+		return wordSourceCount;
 	}
 
 	private void finish() {
@@ -227,7 +244,7 @@ public class CommandLineParser {
 			}
 		}
 		throw new IllegalArgumentException(
-				"-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes]");
+				"-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes|callsigns|qso]");
 	}
 
 	private Optional<Source.PlayType> nextPlayArg() {
@@ -238,7 +255,7 @@ public class CommandLineParser {
 			}
 		}
 		throw new IllegalArgumentException(
-				"-play must be followed by an input type [qso|callsigns|file|stdin|-]");
+				"-play must be followed by an input type [file|stdin|-]");
 	}
 
 	private String readFile(final File file) {
@@ -314,12 +331,16 @@ public class CommandLineParser {
 		println("                        characters specified.");
 		println("                        Default is 'all' if not given.");
 		println("@|bold Source (set of words to randomise, and train with):|@");
-		println("@|cyan -source [codes]|@");
+		println("@|cyan -source [codes|callsigns|qso]|@");
 		println("@|cyan -source codes|@");
 		println("                      - Play random Q-codes and other abbreviations.");
+		println("@|cyan -source callsigns|@");
+		println("                      - Play random callsigns.");
+		println("@|cyan -source QSO|@");
+		println("                      - Play a generated QSO.");
 		println("");
 		println("@|bold Play (text to play/generate):|@");
-		println("@|green -play [stdin|-|file|callsigns|qso|text]|@");
+		println("@|green -play [stdin|-|file|text]|@");
 		println("@|green -play stdin   or  -play -|@");
 		println("                      - Play the text from standard input.");
 		println("@|green -play file <filename>|@");

@@ -5,8 +5,6 @@ import java.util.Optional;
 public class Source {
 
 	public static enum PlayType {
-		Callsigns,
-		QSO,
 		File,
 		Stdin,
 		Text;
@@ -35,7 +33,9 @@ public class Source {
 		Punctuation(PUNCTUATION),
 		Prosigns(PROSIGNS),
 		Set(""),
-		Codes("");
+		Codes(""),
+		Callsigns(""),
+		QSO("");
 
 		private final String content;
 		private SourceType(final String content) {
