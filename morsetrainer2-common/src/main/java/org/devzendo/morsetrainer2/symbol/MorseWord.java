@@ -6,7 +6,7 @@ import static java.util.stream.Collectors.joining;
 import java.util.Arrays;
 import java.util.List;
 
-public class MorseWord {
+public class MorseWord implements Comparable {
 	private final MorseCharacter[] mcs;
 
 	public MorseCharacter[] getArray() {
@@ -47,5 +47,11 @@ public class MorseWord {
 	@Override
 	public int hashCode() {
 		return mcs.hashCode();
+	}
+
+	@Override
+	public int compareTo(final Object o) {
+		final MorseWord other = (MorseWord) o;
+		return toString().compareTo(o.toString());
 	}
 }

@@ -256,12 +256,12 @@ public class TestCommandLineParser {
 
 	@Test
 	public void unknownSource() throws Exception {
-		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes|callsigns|qso]", "-source", "zarjaz");
+		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes|words|callsigns|qso]", "-source", "zarjaz");
 	}
 
 	@Test
 	public void emptySource() throws Exception {
-		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes|callsigns|qso]", "-source");
+		constructWithFailure("-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes|words|callsigns|qso]", "-source");
 	}
 
 	@Test
@@ -389,6 +389,16 @@ public class TestCommandLineParser {
 	public void codesSource() throws Exception {
 		final Options options = construct("-source", "codes").getOptions();
 		assertThat(options.source, equalTo(singleton(SourceType.Codes)));
+		assertThat(options.sourceChars, empty());
+		assertThat(options.sourceWords, not(empty()));
+		assertThat(options.play, equalTo(Optional.empty()));
+		assertThat(options.playString, equalTo(""));
+	}
+
+	@Test
+	public void wordsSource() throws Exception {
+		final Options options = construct("-source", "words").getOptions();
+		assertThat(options.source, equalTo(singleton(SourceType.Words)));
 		assertThat(options.sourceChars, empty());
 		assertThat(options.sourceWords, not(empty()));
 		assertThat(options.play, equalTo(Optional.empty()));

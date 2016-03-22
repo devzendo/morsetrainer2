@@ -72,6 +72,9 @@ public class CommandLineParser {
 					case Codes:
 						options.sourceWords.addAll(MorseWordResourceLoader.wordsFromResource("codes.txt"));
 						break;
+					case Words:
+						options.sourceWords.addAll(MorseWordResourceLoader.wordsFromResource("words.txt"));
+						break;
 					default:
 				}
 				break;
@@ -244,7 +247,7 @@ public class CommandLineParser {
 			}
 		}
 		throw new IllegalArgumentException(
-				"-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes|callsigns|qso]");
+				"-source must be followed by a source type [all|letters|numbers|punctuation|prosigns|set|codes|words|callsigns|qso]");
 	}
 
 	private Optional<Source.PlayType> nextPlayArg() {

@@ -34,6 +34,7 @@ public class Source {
 		Prosigns(PROSIGNS),
 		Set(""),
 		Codes(""),
+		Words(""),
 		Callsigns(""),
 		QSO("");
 

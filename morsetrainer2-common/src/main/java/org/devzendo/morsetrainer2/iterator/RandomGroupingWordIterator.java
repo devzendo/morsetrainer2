@@ -39,6 +39,9 @@ public class RandomGroupingWordIterator implements PartyMorseCharacterIterator {
 		if (LOGGER.isDebugEnabled()) {
 			final List<String> lenStrings = Arrays.asList(lengths).stream().map(i -> i + "").collect(Collectors.toList());
 			LOGGER.debug("Available lengths: " + String.join(" ",  lenStrings));
+			for (final Integer len : lengths) {
+				LOGGER.debug("Number of words of length {}: {}", len, lengthMap.get(len).size());
+			}
 		}
 
 		length.ifPresent(i -> {

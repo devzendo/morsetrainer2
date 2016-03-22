@@ -4,11 +4,18 @@ import static org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser.parse
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
+import org.devzendo.morsetrainer2.iterator.RandomGroupingWordIterator;
 import org.devzendo.morsetrainer2.logging.LoggingUnittest;
 import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,4 +46,18 @@ public class TestMorseWordResourceLoader {
 		assertThat(firstReturnedWords, equalTo(firstExpectedWords));
 		assertThat(words, Matchers.hasSize(206));
 	}
+
+	@Test
+	@Ignore
+	public void wordsCanBeLoaded() throws Exception {
+		final List<MorseWord> words = MorseWordResourceLoader.wordsFromResource("words.txt");
+		final Set<MorseWord> wordSet = new HashSet<>(words);
+		final ArrayList<MorseWord> sortList = new ArrayList<>(wordSet);
+		Collections.sort(sortList);
+		for (final MorseWord word : sortList) {
+			System.out.println(word);
+		}
+		new RandomGroupingWordIterator(Optional.empty(), wordSet);
+	}
+
 }
