@@ -43,6 +43,22 @@ public class TextToMorseCharacterParser implements Iterator<MorseCharacter> {
 	}
 
 	/**
+	 * Parse any ASCII text, possibly containing <PR> style prosigns to a
+	 * MorseWord. Unknown characters are omitted; multiple spaces are
+	 * preserved; other white space ignored.
+	 *
+	 * Builds up an internal list, then converts to an array - may not be the
+	 * best use of memory!
+	 *
+	 * @param string
+	 *            any ASCII text.
+	 * @return possibly empty word, never null.
+	 */
+	public static MorseWord parseToWord(final String string) {
+		return new MorseWord(parse(string));
+	}
+
+	/**
 	 * Parse any ASCII text, possibly containing <PR> style prosigns to an array
 	 * of MorseCharacters. Unknown characters are omitted; multiple spaces are
 	 * preserved; other white space ignored; duplicates are removed (thus forming

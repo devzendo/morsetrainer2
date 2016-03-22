@@ -187,23 +187,10 @@ public class CommandLineParser {
 			throw new IllegalArgumentException("Cannot mix random word and character generators");
 		}
 
-		if (wordSourceCount() > 1) {
-			throw new IllegalArgumentException("Cannot mix random word generators");
+		if ((options.source.contains(SourceType.Codes) || options.source.contains(SourceType.Words)) &&
+			(options.source.contains(SourceType.QSO) || options.source.contains(SourceType.Callsigns))) {
+			throw new IllegalArgumentException("Cannot mix word generators with callsigns or QSO");
 		}
-	}
-
-	private int wordSourceCount() {
-		int wordSourceCount = 0;
-		if (options.source.contains(SourceType.Codes)) {
-			wordSourceCount++;
-		}
-		if (options.source.contains(SourceType.QSO)) {
-			wordSourceCount++;
-		}
-		if (options.source.contains(SourceType.Callsigns)) {
-			wordSourceCount++;
-		}
-		return wordSourceCount;
 	}
 
 	private void finish() {

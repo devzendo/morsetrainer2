@@ -2,8 +2,11 @@ package org.devzendo.morsetrainer2.cmd;
 
 import static java.util.Collections.singleton;
 import static org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser.parseToSet;
+import static org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser.parseToWord;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -21,6 +24,7 @@ import org.devzendo.morsetrainer2.logging.LoggingUnittest;
 import org.devzendo.morsetrainer2.source.Source;
 import org.devzendo.morsetrainer2.source.Source.PlayType;
 import org.devzendo.morsetrainer2.source.Source.SourceType;
+import org.devzendo.morsetrainer2.symbol.MorseWord;
 import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -421,8 +425,21 @@ public class TestCommandLineParser {
 	}
 
 	@Test
-	public void multipleWordSourcesCannotBeUsedTogether() throws Exception {
-		constructWithFailure("Cannot mix random word generators", "-source", "qso", "-source", "codes", "-source", "callsigns");
+	public void generatorsAndWordSourcesCannotBeUsedTogether() throws Exception {
+		constructWithFailure("Cannot mix word generators with callsigns or QSO", "-source", "qso", "-source", "codes", "-source", "callsigns");
+	}
+
+	@Test
+	public void multipleWordGeneratorsCanBeUsedTogether() throws Exception {
+		final Options options = construct("-source", "words", "-source", "codes").getOptions();
+		assertThat(options.source, containsInAnyOrder(SourceType.Words, SourceType.Codes));
+		assertThat(options.sourceChars, empty());
+		assertThat(options.sourceWords, not(empty()));
+		final MorseWord wordFromCodes = parseToWord("BURO");
+		final MorseWord wordFromWords = parseToWord("BECAUSE");
+		assertThat(options.sourceWords, hasItems(wordFromCodes, wordFromWords));
+		assertThat(options.play, equalTo(Optional.empty()));
+		assertThat(options.playString, equalTo(""));
 	}
 
 	@Test
