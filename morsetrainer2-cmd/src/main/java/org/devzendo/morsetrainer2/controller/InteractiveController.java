@@ -18,6 +18,7 @@ import org.devzendo.morsetrainer2.editmatcher.EditMatcher;
 import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIterator;
 import org.devzendo.morsetrainer2.iterator.WordIterator;
 import org.devzendo.morsetrainer2.player.Player;
+import org.devzendo.morsetrainer2.stats.MorseCharacterStat;
 import org.devzendo.morsetrainer2.stats.StatsStore;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
@@ -36,6 +37,8 @@ public class InteractiveController implements Controller {
 	private final Player player;
 	private final StatsStore statsStore;
 	private final ConsoleReader consoleReader;
+	private int correct;
+	private int sent;
 
 	public InteractiveController(final PartyMorseCharacterIterator it, final Player player, final StatsStore statsStore) {
 		this.it = it;
@@ -69,13 +72,18 @@ public class InteractiveController implements Controller {
 		// TODO get number of groups, display current/max groups in prompt?
 
 		PartyMorseCharacter[] word = null;
-		MorseCharacter[] wordMorseCharacters = null;
 		final Set<Integer> wordLengthsSent = new HashSet<>();
 		final Set<MorseCharacter> morseCharactersDecodedSuccessfully = new HashSet<>();
+		final Set<MorseCharacter> morseCharactersSent = new HashSet<>();
+		correct = 0;
+		sent = 0;
 		while (wit.hasNext()) {
 			word = wit.next();
-			wordMorseCharacters = Arrays.stream(word).map(pmc -> pmc.getRight()).toArray(MorseCharacter::allocate);
+			sent ++;
 			wordLengthsSent.add(word.length);
+
+			final MorseCharacter[] wordMorseCharacters = Arrays.stream(word).map(pmc -> pmc.getRight()).toArray(MorseCharacter::allocate);
+			morseCharactersSent.addAll(Arrays.asList(wordMorseCharacters));
 
 			String entered = "";
 			do {
@@ -119,8 +127,25 @@ public class InteractiveController implements Controller {
 			} while (entered.isEmpty());
 		}
 
+		println("@|cyan Score: " + correct + " groups correct out of " + sent + " sent. " + String.format("%3.1f%%", ((double)correct / (double)sent) * 100.0) + "|@");
+		println("@|white " + formatRow("Character", "Hits", "Misses", "Accuracy") + "|@");
+		for (final MorseCharacterStat stat : statsStore.getStatisticsSortedByAccuracy(morseCharactersSent)) {
+			final double perc = stat.getAccuracyPercentage();
+			final String out = formatRow(stat.getMorseCharacter().toString(), "" + stat.getNumberDecodedCorrectly(), "" + (stat.getNumberSent() - stat.getNumberDecodedCorrectly()), String.format("%3.1f%%", stat.getAccuracyPercentage()));
+			if (perc > 90.0) {
+				println("@|green " + out + "|@");
+			} if (perc > 75.0) {
+				println("@|orange " + out + "|@");
+			} else {
+				println("@|red " + out + "|@");
+			}
+		}
 		// Record this session's performance
 		recordSessionPerformance(wordLengthsSent, morseCharactersDecodedSuccessfully);
+	}
+
+	private String formatRow(final String string, final String string2, final String string3, final String string4) {
+		return String.format("%9s %6s %6s %s", string, string2, string3, string4);
 	}
 
 	private void recordSessionPerformance(final Set<Integer> wordLengthsSent, final Set<MorseCharacter> morseCharactersDecodedSuccessfully) {
@@ -132,7 +157,7 @@ public class InteractiveController implements Controller {
 		}
 
 		for (final MorseCharacter ch: morseCharactersDecodedSuccessfully) {
-			final Integer percentage = statsStore.getMorseCharacterSuccessPercentage(ch);
+			final Double percentage = statsStore.getMorseCharacterSuccessPercentage(ch);
 			statsStore.recordMorseCharacterPerformance(now, percentage);
 		}
 	}
@@ -143,6 +168,7 @@ public class InteractiveController implements Controller {
 
 	private void tick() {
 		print("@|bold,green ✓ |@");
+		correct++;
 	}
 
 	private String getInput() {

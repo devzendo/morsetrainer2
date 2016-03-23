@@ -1,6 +1,8 @@
 package org.devzendo.morsetrainer2.stats;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 
@@ -18,7 +20,9 @@ public interface StatsStore {
 
 	void recordWordLengthPerformance(LocalDateTime now, Integer percentage);
 
-	Integer getMorseCharacterSuccessPercentage(MorseCharacter ch);
+	Double getMorseCharacterSuccessPercentage(MorseCharacter ch);
 
-	void recordMorseCharacterPerformance(LocalDateTime now, Integer percentage);
+	void recordMorseCharacterPerformance(LocalDateTime now, Double percentage);
+
+	List<MorseCharacterStat> getStatisticsSortedByAccuracy(Set<MorseCharacter> morseCharactersSent);
 }
