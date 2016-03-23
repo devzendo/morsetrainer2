@@ -305,11 +305,12 @@ public class CommandLineParser {
 		println("                        Default matches the WPM if not given.");
 		println("@|yellow -freq <Hz>|@            - Set the tone frequency in Hertz.");
 		println("                        Default is 600 Hz if not given.");
-		println("@|yellow -interactive|@          - Interactively query for what you heard, to test/assess");
-		println("                        your recognition progress. If not given, just plays/");
-		println("                        or records.");
-		println("@|yellow -record <filename>|@    - Records the Morse to a .wav file. Can't be used with");
-		println("                        -interactive mode. If not given, just plays to speakers.");
+		println("@|yellow -interactive|@          - Interactively query for what you heard,");
+		println("                        to test/assess your recognition progress. If not given,");
+		println("                        just plays or records.");
+		//           01234567890123456789012345678901234567890123456789012345678901234567890123456789
+		println("@|yellow -record <filename>|@    - Records the Morse to a .wav file. Can't be used");
+		println("                        with -interactive mode. Otherwise, just plays to speakers.");
 		println("@|yellow -length <1..9|random>|@ - Fixed or random length of sent character groups.");
 		println("                        Default is random (up to 9) if not given.");
 		println("");
@@ -321,7 +322,10 @@ public class CommandLineParser {
 		println("                        characters specified.");
 		println("                        Default is 'all' if not given.");
 		println("@|bold Source (set of words to randomise, and train with):|@");
-		println("@|cyan -source [codes|callsigns|qso]|@");
+		println("@|cyan -source [words|codes|callsigns|qso]|@");
+		println("@|cyan -source words|@");
+		//           01234567890123456789012345678901234567890123456789012345678901234567890123456789
+		println("                      - Play random words (from ~500 common words, varying length).");
 		println("@|cyan -source codes|@");
 		println("                      - Play random Q-codes and other abbreviations.");
 		println("@|cyan -source callsigns|@");
@@ -348,5 +352,8 @@ public class CommandLineParser {
 		println("-classes              - Show class names in each log line output.");
 		println("-threads              - Show thread names in each log line output.");
 		println("-times                - Show timing data in each log line output.");
+		println("");
+		println("(Words and codes taken from 'The Art & Skill of Radio Telegraphy', by William G.");
+		println(" Pierpont N0HFF (SK) and 'Morse Code for Radio Amateurs' by Roger Cooke G3LDI)");
 	}
 }
