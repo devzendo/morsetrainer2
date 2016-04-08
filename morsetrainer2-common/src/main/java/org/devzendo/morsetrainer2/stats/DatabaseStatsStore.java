@@ -34,33 +34,9 @@ public class DatabaseStatsStore implements StatsStore {
 		dbFile = new File(storeDir, "morsetrainer");
 		final boolean needToCreate = !exists();
 		final String dbURL = "jdbc:h2:" + dbFile.getAbsolutePath();
-		final String dbDriverClass = "org.h2.Driver";
 		LOGGER.debug("Opening database at {}", dbFile.getAbsolutePath());
-		dataSource = new SingleConnectionDataSource(dbDriverClass, dbURL, "sa", "", false);
+		dataSource = new SingleConnectionDataSource(dbURL, "sa", "", false);
 		template = new SimpleJdbcTemplate(dataSource);
-		// Possible Spring bug: if the database isn't there, it doesn't throw
-		// an (unchecked) exception. - it does detect it and logs voluminously,
-		// but then doesn't pass the error on to me.
-		// Looks like a 90013 (DATABASE_NOT_FOUND_1) isn't mapped by the default
-		// Spring sql-error-codes.xml.
-		// So, I have to check myself. (Obviating one of the reasons I chose
-		// Spring!)
-//		try {
-//			// This'll throw if the db doesn't exist.
-//			final boolean closed = dataSource.getConnection().isClosed();
-//			LOGGER.debug("db is initially closed? " + closed);
-//
-//		} catch (final SQLException e) {
-//			if (e.getErrorCode() == ErrorCode.DATABASE_NOT_FOUND_1) {
-//				LOGGER.warn("Database {} not found", dbFile.getAbsolutePath());
-//				create();
-//			} else {
-//				final String exMessage = "Could not open database - SQL Error Code " + e.getErrorCode();
-//				LOGGER.warn("SQLException from isClosed", e);
-//				// Assume that anything that goes wrong here is bad...
-//				throw new org.springframework.jdbc.UncategorizedSQLException(exMessage, "", e);
-//			}
-//		}
 		if (needToCreate) {
 			LOGGER.debug("Database not initialised; creating tables...");
 			create();
