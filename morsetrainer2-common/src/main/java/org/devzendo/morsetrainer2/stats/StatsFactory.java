@@ -43,27 +43,9 @@ public class StatsFactory {
 			}
 
 			@Override
-			public Integer getWordLengthSuccessPercentage(final Integer wordLength) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public void recordWordLengthPerformance(final LocalDateTime now, final Integer percentage) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
 			public Double getMorseCharacterSuccessPercentage(final MorseCharacter ch) {
 				// TODO Auto-generated method stub
 				return null;
-			}
-
-			@Override
-			public void recordMorseCharacterPerformance(final LocalDateTime now, final Double percentage) {
-				// TODO Auto-generated method stub
-
 			}
 
 			@Override
@@ -85,6 +67,50 @@ public class StatsFactory {
 					}});
 				*/
 				return Collections.emptyList();
+			}
+
+			@Override
+			public void close() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public Double getWordLengthSuccessPercentage(final int wordLength) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public void recordWordLengthPerformance(final LocalDateTime now, final int wordLength, final Double percentage) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void recordMorseCharacterPerformance(final LocalDateTime now, final MorseCharacter ch, final Double percentage) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public WordLengthStat getWordLengthStatistics(final int length) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public List<MorseCharacterPerformance> getMorseCharacterPerformance(final MorseCharacter ch, final LocalDateTime from,
+					final LocalDateTime to) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public List<WordLengthPerformance> getWordLengthPerformance(final int wordLength, final LocalDateTime from,
+					final LocalDateTime to) {
+				// TODO Auto-generated method stub
+				return null;
 			}};
 	}
 }

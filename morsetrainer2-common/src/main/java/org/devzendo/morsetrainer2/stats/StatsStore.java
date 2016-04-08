@@ -12,17 +12,30 @@ public interface StatsStore {
 
 	void incrementWordLengthSuccessCount(int length);
 
+	WordLengthStat getWordLengthStatistics(int length);
+
+	Double getWordLengthSuccessPercentage(int wordLength);
+
+
+	void recordWordLengthPerformance(LocalDateTime when, int wordLength, Double percentage);
+
+	List<WordLengthPerformance> getWordLengthPerformance(int wordLength, LocalDateTime from, LocalDateTime to);
+
+
 	void incrementSentCount(MorseCharacter mc);
 
 	void incrementSuccessfulDecodeCount(MorseCharacter ch);
 
-	Integer getWordLengthSuccessPercentage(Integer wordLength);
-
-	void recordWordLengthPerformance(LocalDateTime now, Integer percentage);
-
 	Double getMorseCharacterSuccessPercentage(MorseCharacter ch);
 
-	void recordMorseCharacterPerformance(LocalDateTime now, Double percentage);
+
+	void recordMorseCharacterPerformance(LocalDateTime when, MorseCharacter ch, Double percentage);
+
+	List<MorseCharacterPerformance> getMorseCharacterPerformance(MorseCharacter ch, LocalDateTime from,
+			LocalDateTime to);
 
 	List<MorseCharacterStat> getStatisticsSortedByAccuracy(Set<MorseCharacter> morseCharactersSent);
+
+
+	void close();
 }

@@ -152,13 +152,13 @@ public class InteractiveController implements Controller {
 		final LocalDateTime now = LocalDateTime.now();
 
 		for (final Integer wordLength: wordLengthsSent) {
-			final Integer percentage = statsStore.getWordLengthSuccessPercentage(wordLength);
-			statsStore.recordWordLengthPerformance(now, percentage);
+			final Double percentage = statsStore.getWordLengthSuccessPercentage(wordLength);
+			statsStore.recordWordLengthPerformance(now, wordLength, percentage);
 		}
 
 		for (final MorseCharacter ch: morseCharactersDecodedSuccessfully) {
 			final Double percentage = statsStore.getMorseCharacterSuccessPercentage(ch);
-			statsStore.recordMorseCharacterPerformance(now, percentage);
+			statsStore.recordMorseCharacterPerformance(now, ch, percentage);
 		}
 	}
 
