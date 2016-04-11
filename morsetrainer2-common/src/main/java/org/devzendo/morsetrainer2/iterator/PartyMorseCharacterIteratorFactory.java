@@ -20,10 +20,12 @@ public class PartyMorseCharacterIteratorFactory {
 	private final QSOGenerator qsoGenerator;
 	private final Optional<PlayType> play;
 	private final String playString;
+	private final Integer groupSize;
 
-	public PartyMorseCharacterIteratorFactory(final Optional<Integer> length, final Set<SourceType> source, final Set<MorseCharacter> sourceChars,
+	public PartyMorseCharacterIteratorFactory(final Integer groupSize, final Optional<Integer> length, final Set<SourceType> source, final Set<MorseCharacter> sourceChars,
 			final Set<MorseWord> sourceWords, final Optional<PlayType> play, final String playString, final CallsignGenerator callsignGenerator,
 			final QSOGenerator qsoGenerator) {
+		this.groupSize = groupSize;
 		this.length = length;
 		this.source = source;
 		this.sourceChars = sourceChars;
@@ -58,9 +60,9 @@ public class PartyMorseCharacterIteratorFactory {
 		}
 
 		if (sourceWords.isEmpty()) {
-			return new RandomGroupingSetIterator(length, sourceChars.toArray(new MorseCharacter[0]));
+			return new RandomGroupingSetIterator(groupSize, length, sourceChars.toArray(new MorseCharacter[0]));
 		} else {
-			return new RandomGroupingWordIterator(length, sourceWords);
+			return new RandomGroupingWordIterator(groupSize, length, sourceWords);
 		}
 	}
 }

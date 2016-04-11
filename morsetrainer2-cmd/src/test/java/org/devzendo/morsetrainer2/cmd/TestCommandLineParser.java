@@ -323,6 +323,26 @@ public class TestCommandLineParser {
 	}
 
 	@Test
+	public void groupSizeDefault() throws Exception {
+		final Options options = construct().getOptions();
+		assertThat(options.groupSize, equalTo(25));
+	}
+
+	@Test
+	public void groupSizeOutOfRangeOrIllegal() throws Exception {
+		constructWithFailure("-groupsize must be in the range 10 to 250", "-groupsize", "9");
+		constructWithFailure("-groupsize must be in the range 10 to 250", "-groupsize", "251");
+		constructWithFailure("-groupsize must be in the range 10 to 250", "-groupsize", "fish");
+		constructWithFailure("-groupsize must be in the range 10 to 250", "-groupsize");
+	}
+
+	@Test
+	public void groupSizeCanBeSet() throws Exception {
+		final Options options = construct("-groupsize", "30").getOptions();
+		assertThat(options.groupSize, equalTo(30));
+	}
+
+	@Test
 	public void zeroIsInvalidLength() throws Exception {
 		constructWithFailure("-length <1..9|random> must be followed by an number in the range 1 to 9, or 'random'", "-length", "0");
 	}

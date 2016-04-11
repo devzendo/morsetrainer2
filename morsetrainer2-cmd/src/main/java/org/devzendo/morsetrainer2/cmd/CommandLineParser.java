@@ -148,6 +148,10 @@ public class CommandLineParser {
 				}
 				break;
 
+			case "-groupsize":
+				options.groupSize = nextNumArg(10, 250, "groupsize");
+				break;
+
 			default:
 				usage();
 				throw new IllegalArgumentException("Unknown option '" + arg + "'");
@@ -313,6 +317,7 @@ public class CommandLineParser {
 		println("                        with -interactive mode. Otherwise, just plays to speakers.");
 		println("@|yellow -length <1..9|random>|@ - Fixed or random length of sent character groups.");
 		println("                        Default is random (up to 9) if not given.");
+		println("@|yellow -groupsize <10..250>|@ - Number of words in a group. Default is 25.");
 		println("");
 		println("@|bold Source (set of characters to randomise, and train with):|@");
 		println("@|cyan -source [all|letters|numbers|punctuation|prosigns|set]|@");

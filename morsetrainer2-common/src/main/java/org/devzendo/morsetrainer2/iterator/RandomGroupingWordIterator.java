@@ -22,16 +22,18 @@ import org.slf4j.LoggerFactory;
 public class RandomGroupingWordIterator implements PartyMorseCharacterIterator {
 	private static Logger LOGGER = LoggerFactory.getLogger(RandomGroupingWordIterator.class);
 
+	private final Integer groupSize;
 	private final Optional<Integer> length;
 	private int groupNumber;
 	private LinkedList<PartyMorseCharacter> group;
 	private final Map<Integer, ArrayList<MorseWord>> lengthMap;
 	private final Integer[] lengths;
 
-	public RandomGroupingWordIterator(final Optional<Integer> length, final Set<MorseWord> sourceWordList) {
+	public RandomGroupingWordIterator(final Integer groupSize, final Optional<Integer> length, final Set<MorseWord> sourceWordList) {
 		if (sourceWordList == null || sourceWordList.isEmpty()) {
 			throw new IllegalArgumentException("Source word list cannot be null or empty");
 		}
+		this.groupSize = groupSize;
 		this.length = length;
 		lengthMap = initialiseLengthMap(sourceWordList);
 		lengths = lengthMap.keySet().toArray(new Integer[0]);
@@ -93,7 +95,7 @@ public class RandomGroupingWordIterator implements PartyMorseCharacterIterator {
 	@Override
 	public boolean hasNext() {
 		if (group.isEmpty()) {
-			if (groupNumber == 24) {
+			if (groupNumber == groupSize - 1) {
 				return false;
 			}
 		}

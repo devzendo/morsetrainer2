@@ -7,15 +7,17 @@ import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 
 public class RandomGroupingSetIterator implements PartyMorseCharacterIterator {
+	private final Integer groupSize;
 	private final Optional<Integer> length;
 	private final MorseCharacter[] sourceSetArray;
 	private int groupNumber;
 	private LinkedList<PartyMorseCharacter> group;
 
-	public RandomGroupingSetIterator(final Optional<Integer> length, final MorseCharacter[] sourceSetArray) {
+	public RandomGroupingSetIterator(final Integer groupSize, final Optional<Integer> length, final MorseCharacter[] sourceSetArray) {
 		if (sourceSetArray == null || sourceSetArray.length == 0) {
 			throw new IllegalArgumentException("Source set array cannot be null or empty");
 		}
+		this.groupSize = groupSize;
 		this.length = length;
 		this.sourceSetArray = sourceSetArray;
 		this.groupNumber = 0;
@@ -37,7 +39,7 @@ public class RandomGroupingSetIterator implements PartyMorseCharacterIterator {
 	@Override
 	public boolean hasNext() {
 		if (group.isEmpty()) {
-			if (groupNumber == 24) {
+			if (groupNumber == (groupSize - 1)) {
 				return false;
 			}
 		}

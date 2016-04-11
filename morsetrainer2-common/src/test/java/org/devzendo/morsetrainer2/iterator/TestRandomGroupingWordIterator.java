@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.matchesPattern;
 
 import java.util.HashSet;
 import java.util.List;
@@ -47,32 +48,32 @@ public class TestRandomGroupingWordIterator {
 	public void sourceWordListHasNothingOfSpecifiedLength() throws Exception {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Source word list has no words of length 3");
-        new RandomGroupingWordIterator(Optional.of(3), toSet(parseMultipleToList("A", "ZZZZ", "FF")));
+        new RandomGroupingWordIterator(0, Optional.of(3), toSet(parseMultipleToList("A", "ZZZZ", "FF")));
 	}
 
 	@Test
 	public void zeroLengthWordNotAllowed() throws Exception {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Word '' is of an incorrect length");
-        new RandomGroupingWordIterator(Optional.of(3), toSet(parseMultipleToList("")));
+        new RandomGroupingWordIterator(0, Optional.of(3), toSet(parseMultipleToList("")));
 	}
 
 	@Test
 	public void tenLengthWordNotAllowed() throws Exception {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Word 'ABCDEFGHIJ' is of an incorrect length");
-        new RandomGroupingWordIterator(Optional.of(3), toSet(parseMultipleToList("ABCDEFGHIJ")));
+        new RandomGroupingWordIterator(0, Optional.of(3), toSet(parseMultipleToList("ABCDEFGHIJ")));
 	}
 
 	private void constructWithBadSourceWordList(final Set<MorseWord> sourceWordList) {
 		thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Source word list cannot be null or empty");
-        new RandomGroupingWordIterator(Optional.of(3), sourceWordList);
+        new RandomGroupingWordIterator(0, Optional.of(3), sourceWordList);
 	}
 
 	@Test
 	public void getSomeFixedLengthWords() throws Exception {
-        final RandomGroupingWordIterator it = new RandomGroupingWordIterator(Optional.of(3), toSet(parseMultipleToList("A", "BB", "CCC", "xxx", "yyy", "zzz", "DDDD", "EEEEE")));
+        final RandomGroupingWordIterator it = new RandomGroupingWordIterator(25, Optional.of(3), toSet(parseMultipleToList("A", "BB", "CCC", "xxx", "yyy", "zzz", "DDDD", "EEEEE")));
         for (int i = 0; i < 25; i++ ) {
         	final Set<PartyMorseCharacter> all = new HashSet<>();
         	for (int j = 0; j < 3; j++ ) {
@@ -92,8 +93,30 @@ public class TestRandomGroupingWordIterator {
 	}
 
 	@Test
+	public void generateGivenNumberOfWordsOfGivenSize() throws Exception {
+		final RandomGroupingWordIterator it = new RandomGroupingWordIterator(4, Optional.of(3), toSet(parseMultipleToList("AAA", "BBB", "CCC")));
+		for (int i = 0; i < 4; i++) {
+			assertThat(it.hasNext(), equalTo(true));
+			final StringBuilder sb = new StringBuilder();
+			for (int j = 0; j < 3; j++) {
+				assertThat(it.hasNext(), equalTo(true));
+				sb.append(it.next().getRight().toString());
+			}
+			final String str = sb.toString();
+			assertThat(str, matchesPattern("^[ABC]{3}$"));
+
+			if (i == 3) {
+				assertThat(it.hasNext(), equalTo(false));
+			} else {
+				assertThat(it.hasNext(), equalTo(true));
+				assertThat(it.next().getRight(), equalTo(MorseCharacter.SPC));
+			}
+		}
+	}
+
+	@Test
 	public void getSomeRandomLengthWords() throws Exception {
-        final RandomGroupingWordIterator it = new RandomGroupingWordIterator(Optional.empty(), toSet(parseMultipleToList("1", "22", "333", "4444", "55555", "666666", "7777777", "88888888", "999999999")));
+        final RandomGroupingWordIterator it = new RandomGroupingWordIterator(25, Optional.empty(), toSet(parseMultipleToList("1", "22", "333", "4444", "55555", "666666", "7777777", "88888888", "999999999")));
     	final Set<Integer> seen = new HashSet<>();
     	boolean seenSpaces = false;
         while (it.hasNext()) {
@@ -112,7 +135,7 @@ public class TestRandomGroupingWordIterator {
 
 	@Test
 	public void seenAllRandomLengthWords() throws Exception {
-        final RandomGroupingWordIterator it = new RandomGroupingWordIterator(Optional.empty(), toSet(parseMultipleToList("1", "22", "333", "4444", "55555", "666666", "7777777", "88888888", "999999999")));
+        final RandomGroupingWordIterator it = new RandomGroupingWordIterator(25, Optional.empty(), toSet(parseMultipleToList("1", "22", "333", "4444", "55555", "666666", "7777777", "88888888", "999999999")));
     	final Set<Integer> seen = new HashSet<>();
     	for (int i = 0; i < 100; i++ ) {
     		it.reset();
@@ -130,7 +153,7 @@ public class TestRandomGroupingWordIterator {
 
 	@Test
 	public void codesAllOk() throws Exception {
-		new RandomGroupingWordIterator(Optional.empty(), toSet(MorseWordResourceLoader.wordsFromResource("codes.txt")));
+		new RandomGroupingWordIterator(25, Optional.empty(), toSet(MorseWordResourceLoader.wordsFromResource("codes.txt")));
 	}
 
 	private Set<MorseWord> toSet(final List<MorseWord> words) {

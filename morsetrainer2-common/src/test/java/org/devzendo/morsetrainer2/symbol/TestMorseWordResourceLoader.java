@@ -57,7 +57,7 @@ public class TestMorseWordResourceLoader {
 		for (final MorseWord word : sortList) {
 			System.out.println(word);
 		}
-		new RandomGroupingWordIterator(Optional.empty(), wordSet);
+		new RandomGroupingWordIterator(25, Optional.empty(), wordSet);
 	}
 
 }
