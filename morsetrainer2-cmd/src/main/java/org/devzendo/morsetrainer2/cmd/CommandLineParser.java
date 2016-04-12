@@ -324,6 +324,9 @@ public class CommandLineParser {
 		//           01234567890123456789012345678901234567890123456789012345678901234567890123456789
 		println("@|yellow -record <filename>|@    - Records the Morse to a .wav file. Can't be used");
 		println("                        with -interactive mode. Otherwise, just plays to speakers.");
+		println("@|yellow -contents <filename>|@  - Appends the text that's sent to a .txt file.");
+		println("                        Can't be used with -interactive mode. Must be used with");
+		println("                        -record mode. Otherwise, just displays on screen.");
 		println("@|yellow -length <1..9|random>|@ - Fixed or random length of sent character groups.");
 		println("                        Default is random (up to 9) if not given.");
 		println("@|yellow -groupsize <10..250>|@ - Number of words in a group. Default is 25.");
