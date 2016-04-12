@@ -110,8 +110,7 @@ public class CommandLineParser {
 				options.interactive = true;
 				break;
 
-			case "-record": {
-				boolean badArg = true;
+			case "-record":
 				if (hasNextArg()) {
 					final File recordingFile = new File(nextArg());
 					if (recordingFile.exists()) {
@@ -119,13 +118,18 @@ public class CommandLineParser {
 								"Cannot overwrite existing recording '" + recordingFile.getAbsolutePath() + "'");
 					}
 					options.recordFile = Optional.of(recordingFile);
-					badArg = false;
-				}
-				if (badArg) {
-					throw new IllegalArgumentException("-record <file> must be followed by a file name and optional contents file name");
+				} else {
+					throw new IllegalArgumentException("-record <file> must be followed by a file name");
 				}
 				break;
-			}
+
+			case "-contents":
+				if (hasNextArg()) {
+					options.contentsFile = Optional.of(new File(nextArg()));
+				} else {
+					throw new IllegalArgumentException("-contents <file> must be followed by a file name");
+				}
+				break;
 
 			case "-length": {
 				boolean badArg = true;

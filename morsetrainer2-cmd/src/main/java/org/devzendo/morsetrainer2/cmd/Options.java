@@ -23,6 +23,7 @@ public class Options {
 
 	public boolean interactive = false;
 	public Optional<File> recordFile = Optional.empty();
+	public Optional<File> contentsFile = Optional.empty();
 	public Optional<Integer> length = Optional.empty(); // i.e. Random
 	public Integer groupSize = 25;
 }

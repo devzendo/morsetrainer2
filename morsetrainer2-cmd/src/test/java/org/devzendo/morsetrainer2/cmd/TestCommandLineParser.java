@@ -307,7 +307,31 @@ public class TestCommandLineParser {
 
 	@Test
 	public void emptyRecordFile() throws Exception {
-		constructWithFailure("-record <file> must be followed by a file name and optional contents file name", "-record");
+		constructWithFailure("-record <file> must be followed by a file name", "-record");
+	}
+
+	@Test
+	public void emptyContentsFile() throws Exception {
+		constructWithFailure("-contents <file> must be followed by a file name", "-contents");
+	}
+
+	@Test
+	public void nonexistentContentsFileIsFine() throws Exception {
+		final Options options = construct("-contents", "target/nonexistentcontents.txt").getOptions();
+		assertThat(options.contentsFile.isPresent(), equalTo(true));
+		assertThat(options.contentsFile.get(), equalTo(new File("target/nonexistentcontents.txt")));
+	}
+
+	@Test
+	public void existentContentsFileIsFine() throws Exception {
+		final File temp = Files.createTempFile("contents", ".txt").toFile();
+		try {
+			final Options options = construct("-contents", temp.getAbsolutePath()).getOptions();
+			assertThat(options.contentsFile.isPresent(), equalTo(true));
+			assertThat(options.contentsFile.get(), equalTo(temp));
+		} finally {
+			assertThat(temp.delete(), equalTo(true));
+		}
 	}
 
 	@Test
