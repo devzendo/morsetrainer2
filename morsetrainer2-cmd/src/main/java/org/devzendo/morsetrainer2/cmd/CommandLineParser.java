@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
+import org.devzendo.morsetrainer2.mp3.Mp3Converter;
 import org.devzendo.morsetrainer2.source.Source;
 import org.devzendo.morsetrainer2.source.Source.SourceType;
 import org.devzendo.morsetrainer2.symbol.MorseWordResourceLoader;
@@ -26,9 +27,11 @@ public class CommandLineParser {
 	private int cmdIndex = 0;
 	private final List<String> finalArgList;
 	private final Options options = new Options();
+	private final Mp3Converter mp3Converter;
 
-	public CommandLineParser(final List<String> finalArgList, final Properties properties) {
+	public CommandLineParser(final List<String> finalArgList, final Properties properties, final Mp3Converter mp3Converter) {
 		this.finalArgList = finalArgList;
+		this.mp3Converter = mp3Converter;
 
 		while (hasNextArg()) {
 			final String arg = nextArg();
@@ -113,8 +116,13 @@ public class CommandLineParser {
 			case "-record":
 				if (hasNextArg()) {
 					final String fileName = nextArg();
-					if (! (fileName.endsWith(".mp3") || fileName.endsWith(".wav"))) {
+					final boolean isMp3 = fileName.endsWith(".mp3");
+					final boolean isWav = fileName.endsWith(".wav");
+					if (! (isMp3 || isWav)) {
 						throw new IllegalArgumentException("Recording files can only be .wav or .mp3 files");
+					}
+					if (isMp3 && !mp3Converter.converterAvailable()) {
+						throw new IllegalStateException("Cannot convert to .mp3 format since no MP3 converter program is available");
 					}
 					final File recordingFile = new File(fileName);
 					if (recordingFile.exists()) {

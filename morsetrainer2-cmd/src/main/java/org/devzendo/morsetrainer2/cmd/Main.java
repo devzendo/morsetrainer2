@@ -20,6 +20,8 @@ import org.devzendo.morsetrainer2.controller.Controller;
 import org.devzendo.morsetrainer2.controller.ControllerFactory;
 import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIterator;
 import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIteratorFactory;
+import org.devzendo.morsetrainer2.mp3.LameConverter;
+import org.devzendo.morsetrainer2.mp3.Mp3Converter;
 import org.devzendo.morsetrainer2.player.Player;
 import org.devzendo.morsetrainer2.player.PlayerFactory;
 import org.devzendo.morsetrainer2.prefs.PrefsFactory;
@@ -63,7 +65,8 @@ public class Main {
 			final StatsFactory statsFactory = new StatsFactory(prefsFactory.getPrefsDir());
 			final StatsStore statsStore = statsFactory.open();
 
-			final CommandLineParser parser = new CommandLineParser(finalArgList, properties);
+			final Mp3Converter mp3Converter = new LameConverter();
+			final CommandLineParser parser = new CommandLineParser(finalArgList, properties, mp3Converter);
 			final Options options = parser.getOptions();
 
 			final CallsignGenerator callsignGenerator = new CallsignGenerator();

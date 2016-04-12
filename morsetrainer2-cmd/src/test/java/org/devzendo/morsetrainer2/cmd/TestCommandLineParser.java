@@ -1,15 +1,10 @@
 package org.devzendo.morsetrainer2.cmd;
 
 import static java.util.Collections.singleton;
-import static org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser.parseToSet;
-import static org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser.parseToWord;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.matchesPattern;
-import static org.hamcrest.Matchers.not;
+import static org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser.*;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -21,6 +16,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 import org.devzendo.morsetrainer2.logging.LoggingUnittest;
+import org.devzendo.morsetrainer2.mp3.Mp3Converter;
 import org.devzendo.morsetrainer2.source.Source;
 import org.devzendo.morsetrainer2.source.Source.PlayType;
 import org.devzendo.morsetrainer2.source.Source.SourceType;
@@ -30,7 +26,12 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TestCommandLineParser {
 	private static Properties properties = Main.getPropertiesResource();
 
@@ -41,6 +42,9 @@ public class TestCommandLineParser {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	@Mock
+	private Mp3Converter mp3Converter;
 
 	// WPM
 
@@ -297,14 +301,33 @@ public class TestCommandLineParser {
 
 	@Test
 	public void recordFileCanBeMp3() throws Exception {
-		final Options options = construct("-record", "target/nonexistent.mp3").getOptions();
-		assertThat(options.recordFile.isPresent(), equalTo(true));
-		assertThat(options.recordFile.get(), equalTo(new File("target/nonexistent.mp3")));
+		when(mp3Converter.converterAvailable()).thenReturn(true);
+
+		try {
+			final Options options = construct("-record", "target/nonexistent.mp3").getOptions();
+			assertThat(options.recordFile.isPresent(), equalTo(true));
+			assertThat(options.recordFile.get(), equalTo(new File("target/nonexistent.mp3")));
+		} finally {
+        	Mockito.verify(mp3Converter).converterAvailable();
+        }
 	}
 
 	@Test
 	public void recordFileCannotBeOtherThanWavOrMp3() throws Exception {
 		constructWithFailure("Recording files can only be .wav or .mp3 files", "-record", "target/nonexistent.jpg");
+	}
+
+	@Test
+	public void cannotConvertToMp3IfConverterNotAvailable() throws Exception {
+		when(mp3Converter.converterAvailable()).thenReturn(false);
+		thrown.expect(IllegalStateException.class);
+        thrown.expectMessage(equalTo("Cannot convert to .mp3 format since no MP3 converter program is available"));
+
+        try {
+        	construct("-record", "target/nonexistent.mp3");
+        } finally {
+        	Mockito.verify(mp3Converter).converterAvailable();
+        }
 	}
 
 	@Test
@@ -515,6 +538,6 @@ public class TestCommandLineParser {
 	}
 
 	private CommandLineParser construct(final String ... args) {
-		return new CommandLineParser(Arrays.asList(args), properties);
+		return new CommandLineParser(Arrays.asList(args), properties, mp3Converter);
 	}
 }
