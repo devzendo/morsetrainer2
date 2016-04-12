@@ -307,7 +307,7 @@ public class TestCommandLineParser {
 
 	@Test
 	public void emptyRecordFile() throws Exception {
-		constructWithFailure("-record <file> must be followed by a file name", "-record");
+		constructWithFailure("-record <file> must be followed by a file name and optional contents file name", "-record");
 	}
 
 	@Test
@@ -469,7 +469,7 @@ public class TestCommandLineParser {
 
 	private void constructWithFailure(final String message, final String ... args) {
 		thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage(message);
+        thrown.expectMessage(equalTo(message));
         construct(args);
 	}
 
