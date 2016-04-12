@@ -296,6 +296,18 @@ public class TestCommandLineParser {
 	}
 
 	@Test
+	public void recordFileCanBeMp3() throws Exception {
+		final Options options = construct("-record", "target/nonexistent.mp3").getOptions();
+		assertThat(options.recordFile.isPresent(), equalTo(true));
+		assertThat(options.recordFile.get(), equalTo(new File("target/nonexistent.mp3")));
+	}
+
+	@Test
+	public void recordFileCannotBeOtherThanWavOrMp3() throws Exception {
+		constructWithFailure("Recording files can only be .wav or .mp3 files", "-record", "target/nonexistent.jpg");
+	}
+
+	@Test
 	public void cannotOverwriteExistentRecordFile() throws Exception {
 		final File temp = Files.createTempFile("recording", ".wav").toFile();
 		try {

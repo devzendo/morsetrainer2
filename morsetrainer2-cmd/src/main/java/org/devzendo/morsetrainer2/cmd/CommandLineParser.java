@@ -112,7 +112,11 @@ public class CommandLineParser {
 
 			case "-record":
 				if (hasNextArg()) {
-					final File recordingFile = new File(nextArg());
+					final String fileName = nextArg();
+					if (! (fileName.endsWith(".mp3") || fileName.endsWith(".wav"))) {
+						throw new IllegalArgumentException("Recording files can only be .wav or .mp3 files");
+					}
+					final File recordingFile = new File(fileName);
 					if (recordingFile.exists()) {
 						throw new IllegalArgumentException(
 								"Cannot overwrite existing recording '" + recordingFile.getAbsolutePath() + "'");
