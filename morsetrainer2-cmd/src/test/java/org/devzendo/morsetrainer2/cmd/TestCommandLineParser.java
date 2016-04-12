@@ -311,13 +311,18 @@ public class TestCommandLineParser {
 	}
 
 	@Test
+	public void cannotHaveContentsWithoutRecord() throws Exception {
+		constructWithFailure("-contents only supported if also using -record", "-contents", "target/nonexistentcontents.txt");
+	}
+
+	@Test
 	public void emptyContentsFile() throws Exception {
 		constructWithFailure("-contents <file> must be followed by a file name", "-contents");
 	}
 
 	@Test
 	public void nonexistentContentsFileIsFine() throws Exception {
-		final Options options = construct("-contents", "target/nonexistentcontents.txt").getOptions();
+		final Options options = construct("-contents", "target/nonexistentcontents.txt", "-record", "target/nonexistent.wav").getOptions();
 		assertThat(options.contentsFile.isPresent(), equalTo(true));
 		assertThat(options.contentsFile.get(), equalTo(new File("target/nonexistentcontents.txt")));
 	}
@@ -326,7 +331,7 @@ public class TestCommandLineParser {
 	public void existentContentsFileIsFine() throws Exception {
 		final File temp = Files.createTempFile("contents", ".txt").toFile();
 		try {
-			final Options options = construct("-contents", temp.getAbsolutePath()).getOptions();
+			final Options options = construct("-contents", temp.getAbsolutePath(), "-record", "target/nonexistent.wav").getOptions();
 			assertThat(options.contentsFile.isPresent(), equalTo(true));
 			assertThat(options.contentsFile.get(), equalTo(temp));
 		} finally {

@@ -193,6 +193,10 @@ public class CommandLineParser {
 			throw new IllegalArgumentException("-interactive cannot be used with -record");
 		}
 
+		if (!options.recordFile.isPresent() && options.contentsFile.isPresent()) {
+			throw new IllegalArgumentException("-contents only supported if also using -record");
+		}
+
 		if (!options.sourceChars.isEmpty() && (
 				options.source.contains(SourceType.Codes) || options.source.contains(SourceType.QSO) ||
 				options.source.contains(SourceType.Callsigns)
