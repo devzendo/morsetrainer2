@@ -318,6 +318,16 @@ public class TestCommandLineParser {
 	}
 
 	@Test
+	public void recordFileMustBeLowerCaseWav() throws Exception {
+		constructWithFailure("Recording files can only be .wav or .mp3 files", "-record", "target/nonexistent.WAV");
+	}
+
+	@Test
+	public void recordFileMustBeLowerCaseMP3() throws Exception {
+		constructWithFailure("Recording files can only be .wav or .mp3 files", "-record", "target/nonexistent.MP3");
+	}
+
+	@Test
 	public void cannotConvertToMp3IfConverterNotAvailable() throws Exception {
 		when(mp3Converter.converterAvailable()).thenReturn(false);
 		thrown.expect(IllegalStateException.class);

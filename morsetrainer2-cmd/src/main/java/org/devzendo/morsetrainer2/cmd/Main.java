@@ -20,6 +20,7 @@ import org.devzendo.morsetrainer2.controller.Controller;
 import org.devzendo.morsetrainer2.controller.ControllerFactory;
 import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIterator;
 import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIteratorFactory;
+import org.devzendo.morsetrainer2.mp3.Conversion;
 import org.devzendo.morsetrainer2.mp3.LameConverter;
 import org.devzendo.morsetrainer2.mp3.Mp3Converter;
 import org.devzendo.morsetrainer2.player.Player;
@@ -73,7 +74,8 @@ public class Main {
 			final QSOGenerator qsoGenerator = new QSOGenerator(callsignGenerator);
 			final PartyMorseCharacterIterator it = new PartyMorseCharacterIteratorFactory(options.groupSize, options.length, options.source, options.sourceChars, options.sourceWords, options.play, options.playString, callsignGenerator, qsoGenerator).create();
 
-			final Player player = PlayerFactory.createPlayer(options.freqHz, options.wpm, options.fwpm, options.recordFile);
+			final Optional<File> wavRecordingFile = Conversion.toWav(options.recordFile);
+			final Player player = PlayerFactory.createPlayer(options.freqHz, options.wpm, options.fwpm, wavRecordingFile);
 			final Optional<PrintStream> contentsPrintStream = contentsPrintStream(options.contentsFile);
 			printContentsBanner(options.wpm, options.fwpm, options.source, options.play, options.recordFile, contentsPrintStream);
 			final Controller ctrl = ControllerFactory.createController(options.interactive, it, player, statsStore, contentsPrintStream);
@@ -83,6 +85,11 @@ public class Main {
 			ctrl.start();
 			ctrl.finish();
 			contentsPrintStream.ifPresent(ps -> { ps.println(); ps.println(); });
+
+			if (Conversion.isMP3(options.recordFile)) {
+				mp3Converter.convertToMP3(wavRecordingFile.get());
+			}
+
 		} catch (final Exception e) {
 			println("@|bold,red " + e.getMessage() + "|@");
 			LOGGER.error(e.getMessage(), e);

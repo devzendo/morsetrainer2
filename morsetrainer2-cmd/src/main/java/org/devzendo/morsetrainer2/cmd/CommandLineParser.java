@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
+import org.devzendo.morsetrainer2.mp3.Conversion;
 import org.devzendo.morsetrainer2.mp3.Mp3Converter;
 import org.devzendo.morsetrainer2.source.Source;
 import org.devzendo.morsetrainer2.source.Source.SourceType;
@@ -116,15 +117,15 @@ public class CommandLineParser {
 			case "-record":
 				if (hasNextArg()) {
 					final String fileName = nextArg();
-					final boolean isMp3 = fileName.endsWith(".mp3");
-					final boolean isWav = fileName.endsWith(".wav");
+					final File recordingFile = new File(fileName);
+					final boolean isMp3 = Conversion.isMP3(recordingFile);
+					final boolean isWav = Conversion.isWav(recordingFile);
 					if (! (isMp3 || isWav)) {
 						throw new IllegalArgumentException("Recording files can only be .wav or .mp3 files");
 					}
 					if (isMp3 && !mp3Converter.converterAvailable()) {
 						throw new IllegalStateException("Cannot convert to .mp3 format since no MP3 converter program is available");
 					}
-					final File recordingFile = new File(fileName);
 					if (recordingFile.exists()) {
 						throw new IllegalArgumentException(
 								"Cannot overwrite existing recording '" + recordingFile.getAbsolutePath() + "'");
