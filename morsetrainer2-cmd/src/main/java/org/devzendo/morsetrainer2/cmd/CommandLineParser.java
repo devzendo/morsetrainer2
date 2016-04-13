@@ -339,8 +339,10 @@ public class CommandLineParser {
 		println("                        to test/assess your recognition progress. If not given,");
 		println("                        just plays or records.");
 		//           01234567890123456789012345678901234567890123456789012345678901234567890123456789
-		println("@|yellow -record <filename>|@    - Records the Morse to a .wav file. Can't be used");
-		println("                        with -interactive mode. Otherwise, just plays to speakers.");
+		println("@|yellow -record <filename>|@    - Records the Morse to a .wav or .mp3 file. Can't");
+		println("                        be used with -interactive mode. Otherwise, just plays to");
+		println("                        speakers. MP3 creation needs a suitable converter (LAME)");
+		println("                        on your PATH.");
 		println("@|yellow -contents <filename>|@  - Appends the text that's sent to a .txt file.");
 		println("                        Can't be used with -interactive mode. Must be used with");
 		println("                        -record mode. Otherwise, just displays on screen.");
