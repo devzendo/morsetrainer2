@@ -87,7 +87,9 @@ public class Main {
 			contentsPrintStream.ifPresent(ps -> { ps.println(); ps.println(); });
 
 			if (Conversion.isMP3(options.recordFile)) {
-				mp3Converter.convertToMP3(wavRecordingFile.get());
+				final File wavFile = wavRecordingFile.get();
+				mp3Converter.convertToMP3(wavFile);
+				wavFile.delete();
 			}
 
 		} catch (final Exception e) {
