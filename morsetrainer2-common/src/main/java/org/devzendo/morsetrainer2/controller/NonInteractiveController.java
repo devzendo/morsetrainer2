@@ -57,7 +57,7 @@ public class NonInteractiveController implements Controller {
 				outputNewline();
 				continue;
 			}
-			xCursor++;
+			xCursor+= mc.toString().length();
 			needNewline = true;
 			outputString(mc.toString());
 		}
