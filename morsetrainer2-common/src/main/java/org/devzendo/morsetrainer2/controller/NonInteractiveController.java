@@ -65,11 +65,13 @@ public class NonInteractiveController implements Controller {
 
 	private void outputString(final String string) {
 		System.err.print(string);
+		System.err.flush();
 		contentsPrintStream.ifPresent(ps -> ps.print(string));
 	}
 
 	private void outputNewline() {
 		System.err.println();
+		System.err.flush();
 		contentsPrintStream.ifPresent(ps -> ps.println());
 	}
 
