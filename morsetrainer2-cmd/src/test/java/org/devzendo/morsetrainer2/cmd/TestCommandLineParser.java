@@ -50,44 +50,44 @@ public class TestCommandLineParser {
 
 	@Test
 	public void wpmAsLast() {
-		constructWithFailure("-wpm must be in the range 12 to 60", "-wpm");
+		constructWithFailure("-wpm must be in the range 8 to 60", "-wpm");
 	}
 
 	@Test
 	public void wpmWithNonInteger() {
-		constructWithFailure("-wpm must be in the range 12 to 60", "-wpm", "zounds");
+		constructWithFailure("-wpm must be in the range 8 to 60", "-wpm", "zounds");
 	}
 
 	@Test
 	public void wpmUnderRange() {
-		constructWithFailure("-wpm must be in the range 12 to 60", "-wpm", "11");
+		constructWithFailure("-wpm must be in the range 8 to 60", "-wpm", "7");
 	}
 
 	@Test
 	public void wpmOverRange() {
-		constructWithFailure("-wpm must be in the range 12 to 60", "-wpm", "61");
+		constructWithFailure("-wpm must be in the range 8 to 60", "-wpm", "61");
 	}
 
 	// FWPM
 
 	@Test
 	public void fwpmAsLast() {
-		constructWithFailure("-fwpm must be in the range 12 to 60", "-fwpm");
+		constructWithFailure("-fwpm must be in the range 8 to 60", "-fwpm");
 	}
 
 	@Test
 	public void fwpmWithNonInteger() {
-		constructWithFailure("-fwpm must be in the range 12 to 60", "-fwpm", "zounds");
+		constructWithFailure("-fwpm must be in the range 8 to 60", "-fwpm", "zounds");
 	}
 
 	@Test
 	public void fwpmUnderRange() {
-		constructWithFailure("-fwpm must be in the range 12 to 60", "-fwpm", "11");
+		constructWithFailure("-fwpm must be in the range 8 to 60", "-fwpm", "7");
 	}
 
 	@Test
 	public void fwpmOverRange() {
-		constructWithFailure("-fwpm must be in the range 12 to 60", "-fwpm", "61");
+		constructWithFailure("-fwpm must be in the range 8 to 60", "-fwpm", "61");
 	}
 
 	// FREQ

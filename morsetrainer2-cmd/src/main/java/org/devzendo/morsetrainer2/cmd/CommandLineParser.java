@@ -49,11 +49,11 @@ public class CommandLineParser {
 				finish();
 
 			case "-wpm":
-				options.wpm = nextNumArg(12, 60, "wpm");
+				options.wpm = nextNumArg(8, 60, "wpm");
 				break;
 
 			case "-fwpm":
-				options.fwpm = nextNumArg(12, 60, "fwpm");
+				options.fwpm = nextNumArg(8, 60, "fwpm");
 				break;
 
 			case "-freq":
@@ -330,7 +330,7 @@ public class CommandLineParser {
 		println("@|bold Options: |@");
 		println("@|yellow -wpm <words per min>|@  - Set the speed in words per minute.");
 		println("                        Default is 12 WPM if not given.");
-		println("                        Must be between 12 and 60.");
+		println("                        Must be between 8 and 60.");
 		println("@|yellow -fwpm <words per min>|@ - Set the Farnsworth speed in words per minute.");
 		println("                        Default matches the WPM if not given.");
 		println("@|yellow -freq <Hz>|@            - Set the tone frequency in Hertz.");
