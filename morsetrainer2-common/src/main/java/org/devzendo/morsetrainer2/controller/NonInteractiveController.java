@@ -1,9 +1,9 @@
 package org.devzendo.morsetrainer2.controller;
 
 import java.io.PrintStream;
+import java.util.Iterator;
 import java.util.Optional;
 
-import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIterator;
 import org.devzendo.morsetrainer2.iterator.WordIterator;
 import org.devzendo.morsetrainer2.player.Player;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
@@ -12,13 +12,13 @@ import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 public class NonInteractiveController implements Controller {
 
 	private static final PartyMorseCharacter SPACE = new PartyMorseCharacter(0, MorseCharacter.SPC);
-	private final PartyMorseCharacterIterator it;
+	private final Iterator<PartyMorseCharacter> it;
 	private final Player player;
 	private final Optional<PrintStream> contentsPrintStream;
 	private int xCursor;
 	private boolean needNewline;
 
-	public NonInteractiveController(final PartyMorseCharacterIterator it, final Player player,
+	public NonInteractiveController(final Iterator<PartyMorseCharacter> it, final Player player,
 			final Optional<PrintStream> contentsPrintStream) {
 		this.it = it;
 		this.player = player;

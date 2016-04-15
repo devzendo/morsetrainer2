@@ -1,5 +1,6 @@
 package org.devzendo.morsetrainer2.iterator;
 
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import org.devzendo.morsetrainer2.source.Source.PlayType;
 import org.devzendo.morsetrainer2.source.Source.SourceType;
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 import org.devzendo.morsetrainer2.symbol.MorseWord;
+import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 
 public class PartyMorseCharacterIteratorFactory {
 
@@ -36,7 +38,7 @@ public class PartyMorseCharacterIteratorFactory {
 		this.qsoGenerator = qsoGenerator;
 	}
 
-	public PartyMorseCharacterIterator create() {
+	public Iterator<PartyMorseCharacter> create() {
 		if (play.isPresent()) {
 			switch (play.get()) {
 			case File:

@@ -1,12 +1,13 @@
 package org.devzendo.morsetrainer2.iterator;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
 
 import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 
-public class RandomGroupingSetIterator implements PartyMorseCharacterIterator {
+public class RandomGroupingSetIterator implements Iterator<PartyMorseCharacter> {
 	private final Integer groupSize;
 	private final Optional<Integer> length;
 	private final MorseCharacter[] sourceSetArray;

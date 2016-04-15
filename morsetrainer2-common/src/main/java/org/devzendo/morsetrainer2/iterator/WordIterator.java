@@ -8,10 +8,10 @@ import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 
 public class WordIterator implements Iterator<PartyMorseCharacter[]>{
 
-	private final PartyMorseCharacterIterator it;
+	private final Iterator<PartyMorseCharacter> it;
 	private final ArrayList<PartyMorseCharacter> list = new ArrayList<PartyMorseCharacter>();
 
-	public WordIterator(final PartyMorseCharacterIterator it) {
+	public WordIterator(final Iterator<PartyMorseCharacter> it) {
 		this.it = it;
 		findNextWord();
 	}

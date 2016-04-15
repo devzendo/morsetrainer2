@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -18,7 +19,6 @@ import org.devzendo.commoncode.logging.Logging;
 import org.devzendo.commoncode.resource.ResourceLoader;
 import org.devzendo.morsetrainer2.controller.Controller;
 import org.devzendo.morsetrainer2.controller.ControllerFactory;
-import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIterator;
 import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIteratorFactory;
 import org.devzendo.morsetrainer2.mp3.Conversion;
 import org.devzendo.morsetrainer2.mp3.LameConverter;
@@ -32,6 +32,7 @@ import org.devzendo.morsetrainer2.source.Source.PlayType;
 import org.devzendo.morsetrainer2.source.Source.SourceType;
 import org.devzendo.morsetrainer2.stats.StatsFactory;
 import org.devzendo.morsetrainer2.stats.StatsStore;
+import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 import org.fusesource.jansi.AnsiConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,9 +71,9 @@ public class Main {
 			final CommandLineParser parser = new CommandLineParser(finalArgList, properties, mp3Converter);
 			final Options options = parser.getOptions();
 
-			final CallsignGenerator callsignGenerator = new CallsignGenerator();
+			final CallsignGenerator callsignGenerator = new CallsignGenerator(options.groupSize);
 			final QSOGenerator qsoGenerator = new QSOGenerator(callsignGenerator);
-			final PartyMorseCharacterIterator it = new PartyMorseCharacterIteratorFactory(options.groupSize, options.length, options.source, options.sourceChars, options.sourceWords, options.play, options.playString, callsignGenerator, qsoGenerator).create();
+			final Iterator<PartyMorseCharacter> it = new PartyMorseCharacterIteratorFactory(options.groupSize, options.length, options.source, options.sourceChars, options.sourceWords, options.play, options.playString, callsignGenerator, qsoGenerator).create();
 
 			final Optional<File> wavRecordingFile = Conversion.toWav(options.recordFile);
 			final Player player = PlayerFactory.createPlayer(options.freqHz, options.wpm, options.fwpm, wavRecordingFile);

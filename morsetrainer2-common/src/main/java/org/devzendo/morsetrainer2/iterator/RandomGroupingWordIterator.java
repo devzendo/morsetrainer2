@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.joining;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RandomGroupingWordIterator implements PartyMorseCharacterIterator {
+public class RandomGroupingWordIterator implements Iterator<PartyMorseCharacter> {
 	private static Logger LOGGER = LoggerFactory.getLogger(RandomGroupingWordIterator.class);
 
 	private final Integer groupSize;

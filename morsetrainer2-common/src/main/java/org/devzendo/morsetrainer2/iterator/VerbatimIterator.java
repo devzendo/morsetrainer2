@@ -7,7 +7,7 @@ import org.devzendo.morsetrainer2.symbol.MorseCharacter;
 import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 import org.devzendo.morsetrainer2.symbol.TextToMorseCharacterParser;
 
-public class VerbatimIterator implements PartyMorseCharacterIterator {
+public class VerbatimIterator implements Iterator<PartyMorseCharacter> {
 
 	private final Iterator<MorseCharacter> iterator;
 

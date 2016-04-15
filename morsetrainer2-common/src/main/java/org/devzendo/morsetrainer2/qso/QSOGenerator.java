@@ -1,6 +1,8 @@
 package org.devzendo.morsetrainer2.qso;
 
-import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIterator;
+import java.util.Iterator;
+
+import org.devzendo.morsetrainer2.symbol.PartyMorseCharacter;
 
 public class QSOGenerator {
 
@@ -9,14 +11,14 @@ public class QSOGenerator {
 	}
 
 	// need to generate list of MorseCharacters, tagged with party.
-	
-	
+
+
 	public String generate() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public PartyMorseCharacterIterator iterator() {
+	public Iterator<PartyMorseCharacter> iterator() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -1,21 +1,18 @@
 package org.devzendo.morsetrainer2.controller;
 
-import static org.devzendo.morsetrainer2.cmd.AnsiHelper.print;
-import static org.devzendo.morsetrainer2.cmd.AnsiHelper.println;
-import static org.devzendo.morsetrainer2.cmd.AnsiHelper.printlnraw;
-import static org.devzendo.morsetrainer2.cmd.AnsiHelper.printraw;
+import static org.devzendo.morsetrainer2.cmd.AnsiHelper.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.devzendo.commoncode.concurrency.ThreadUtils;
 import org.devzendo.morsetrainer2.editmatcher.Edit;
 import org.devzendo.morsetrainer2.editmatcher.EditMatcher;
-import org.devzendo.morsetrainer2.iterator.PartyMorseCharacterIterator;
 import org.devzendo.morsetrainer2.iterator.WordIterator;
 import org.devzendo.morsetrainer2.player.Player;
 import org.devzendo.morsetrainer2.stats.MorseCharacterStat;
@@ -33,14 +30,14 @@ public class InteractiveController implements Controller {
 	private static final Logger LOGGER = LoggerFactory.getLogger(InteractiveController.class);
 	private static final String PROMPT = AnsiRenderer.render("@|yellow,bold ? |@");
 
-	private final PartyMorseCharacterIterator it;
+	private final Iterator<PartyMorseCharacter> it;
 	private final Player player;
 	private final StatsStore statsStore;
 	private final ConsoleReader consoleReader;
 	private int correct;
 	private int sent;
 
-	public InteractiveController(final PartyMorseCharacterIterator it, final Player player, final StatsStore statsStore) {
+	public InteractiveController(final Iterator<PartyMorseCharacter> it, final Player player, final StatsStore statsStore) {
 		this.it = it;
 		this.player = player;
 		this.statsStore = statsStore;
