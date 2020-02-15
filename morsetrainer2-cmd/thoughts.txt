@@ -1,0 +1,26 @@
+all, letters, numbers, prosigns, punct, set generate vvv then 5 groups of random chars from their source, at fixed length or random
+depending on the length setting (random by default). then =. repeat 5 times, like ham morse.
+
+this needs a groupingiterator (takes the source type/string and generates randomized content from the input set, in fixed/random groups)
+
+file, stdin, callsign and qso generate streams and play/record them verbatim.
+
+this needs a verbatimiteratorr (for file/stdin/callsign) 
+and a qsoiterator (for qso)
+
+output of the generators is an iterator(?) of party-tagged-morsecharacter
+
+
+if playing, then each character emitted as it is played.
+if recording, it doesn't matter, the characters will be emitted quickly.
+
+
+these need a synchronouscontroller..
+
+and a MorseCharactersToPulses + PulsePlayer|PulseRecorder
+
+if -interactive, (head reading/question and answer), the stream of characters is played until a space, then input is required.
+nothing is printed, until an answer has been given, then the text that was played is shown
+(if you got it wrong?)
+
+this needs an interactivecontroller..

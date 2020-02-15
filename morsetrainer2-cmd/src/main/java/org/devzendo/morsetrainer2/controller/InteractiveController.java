@@ -131,8 +131,8 @@ public class InteractiveController implements Controller {
 			final String out = formatRow(stat.getMorseCharacter().toString(), "" + stat.getNumberDecodedCorrectly(), "" + (stat.getNumberSent() - stat.getNumberDecodedCorrectly()), String.format("%3.1f%%", stat.getAccuracyPercentage()));
 			if (perc > 90.0) {
 				println("@|green " + out + "|@");
-			} if (perc > 75.0) {
-				println("@|orange " + out + "|@");
+			} else if (perc > 75.0) {
+				println("@|yellow " + out + "|@");
 			} else {
 				println("@|red " + out + "|@");
 			}

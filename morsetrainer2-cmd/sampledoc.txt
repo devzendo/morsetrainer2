@@ -1,0 +1,2 @@
+this is a test file for morsetrainer2
+written by matt gumbley m0cuv =
