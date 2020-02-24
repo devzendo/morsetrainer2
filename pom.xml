@@ -30,9 +30,9 @@ non-GUI testing.
 	</licenses>
 
 	<scm>
-		<url>https://bitbucket.org/devzendo/morsetrainer2</url>
-		<connection>scm:hg:https://bitbucket.org/devzendo/morsetrainer2</connection>
-		<developerConnection>scm:hg:https://bitbucket.org/devzendo/morsetrainer2</developerConnection>
+		<url>https://github.com/devzendo/morsetrainer2.git</url>
+		<connection>scm:git:https://github.com/devzendo/morsetrainer2.git</connection>
+		<developerConnection>scm:git:git@github.com:devzendo/morsetrainer2.git</developerConnection>
 	</scm>
 
 	<developers>
